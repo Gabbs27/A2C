@@ -1,154 +1,104 @@
-# A2C Internacional - Sitio Web de Vehículos de Lujo
+# A2C INTERNATIONAL - SALE AND SERVICES
 
-Sitio web moderno y elegante para A2C Internacional, inspirado en el diseño premium de concesionarios de vehículos de lujo.
+Sitio web profesional para A2C International, empresa dedicada a la venta y servicio de vehículos de lujo y exóticos.
 
-## 🚀 Características
+## 🎨 Guía de Marca
 
-- **Diseño Moderno y Responsivo**: Optimizado para todos los dispositivos
-- **Hero Slider Dinámico**: Carrusel automático de imágenes con navegación
-- **Secciones Interactivas**: Compra, Venta y Servicio de vehículos
-- **Animaciones Suaves**: Transiciones y efectos visuales atractivos
-- **Navegación Intuitiva**: Header sticky con menú móvil
-- **UI/UX Premium**: Diseño inspirado en marcas de lujo
+### Colores Principales
+- **Plata Metálico**: `#C0C0C0` (color principal del logo)
+- **Negro/Gris Oscuro**: `#1A1A1A` (contrastes y texto)
+- **Azul (Acento)**: `#3B82F6` (botones y CTAs)
 
-## 🛠️ Tecnologías
+### Tipografía
+- **Fuentes**: Poppins, Inter (Google Fonts)
+- **Headings**: font-weight 700-900
+- **Body**: font-weight 400
 
-- **React 18.3**: Biblioteca JavaScript para interfaces de usuario
-- **Vite 5.2**: Build tool rápido y moderno
-- **React Icons**: Iconos modernos y escalables
-- **CSS3**: Estilos personalizados con variables CSS y animaciones
+### Estilo Visual
+- Moderno, profesional, metálico, sofisticado
+- Efectos 3D y metálicos en títulos
+- Sombras suaves en cards
+- Transiciones smooth (200ms)
+- Border-radius moderno (8px - 16px)
 
-## 📦 Instalación
+## 🚀 Instalación
 
-1. **Instalar dependencias**:
 ```bash
+# Instalar dependencias
 npm install
-```
 
-2. **Iniciar servidor de desarrollo**:
-```bash
+# Ejecutar en desarrollo
 npm run dev
-```
 
-3. **Abrir en el navegador**:
-El sitio estará disponible en `http://localhost:5173`
-
-## 🏗️ Estructura del Proyecto
-
-```
-A2C/
-├── src/
-│   ├── components/
-│   │   ├── Header.jsx          # Navegación principal
-│   │   ├── Header.css
-│   │   ├── Hero.jsx            # Slider principal
-│   │   ├── Hero.css
-│   │   ├── Welcome.jsx         # Sección de bienvenida
-│   │   ├── Welcome.css
-│   │   ├── Services.jsx        # Servicios (Comprar/Vender/Servicio)
-│   │   ├── Services.css
-│   │   ├── Features.jsx        # Características destacadas
-│   │   ├── Features.css
-│   │   ├── Footer.jsx          # Pie de página
-│   │   └── Footer.css
-│   ├── App.jsx                 # Componente principal
-│   ├── App.css
-│   ├── main.jsx               # Punto de entrada
-│   └── index.css              # Estilos globales
-├── index.html
-├── package.json
-├── vite.config.js
-└── README.md
-```
-
-## 🎨 Paleta de Colores
-
-- **Primario**: #1a1a1a (Negro)
-- **Secundario**: #d4af37 (Dorado)
-- **Acento**: #c89f3c (Dorado oscuro)
-- **Fondo claro**: #f8f8f8
-- **Fondo oscuro**: #0a0a0a
-
-## 📱 Responsive Design
-
-El sitio está optimizado para:
-- **Desktop**: 1200px+
-- **Tablet**: 768px - 1199px
-- **Mobile**: 320px - 767px
-
-## 🚀 Build para Producción
-
-Para crear una versión optimizada para producción:
-
-```bash
+# Build para producción
 npm run build
 ```
 
-Los archivos se generarán en la carpeta `dist/`.
+## 📍 Ubicación
 
-Para previsualizar el build:
+**Dirección**: Avenida 6, Santo Domingo 11114, República Dominicana  
+**Google Maps**: https://maps.app.goo.gl/jV8nB1RSGDy96rbc7
 
-```bash
-npm run preview
-```
+**Teléfono**:
+- Ventas: +1 (829) 447-0259
 
-## 🎯 Funcionalidades Implementadas
+**Horario**:
+- Lunes - Viernes: 9:00 AM - 8:00 PM
+- Sábado: 9:00 AM - 6:00 PM
+- Domingo: 11:00 AM - 5:00 PM
 
-✅ Header con navegación sticky y menú móvil  
-✅ Hero slider con cambio automático de imágenes  
-✅ Sección de bienvenida con CTAs  
-✅ Cards de servicios (Comprar, Vender, Servicio)  
-✅ Sección de características destacadas  
-✅ Footer completo con información de contacto  
-✅ Diseño 100% responsive  
-✅ Animaciones y transiciones suaves  
-✅ Optimización de rendimiento  
+## 📦 Tecnologías
 
-## 📝 Personalización
+- React 18
+- Vite
+- React Icons
+- CSS3 con variables personalizadas
+- Google Fonts (Poppins, Inter)
 
-### Cambiar Imágenes del Slider
+## 🎯 Secciones
 
-Edita el archivo `src/components/Hero.jsx` y modifica el array `slides`:
+1. **Header/Navigation**: Menú fijo con logo y navegación
+2. **Hero**: Slider de imágenes con CTAs
+3. **Welcome**: Introducción a la empresa
+4. **Services**: Grid de servicios (Compra, Venta, Servicio)
+5. **Features**: Por qué elegir A2C International
+6. **Contact**: Información de contacto + Google Maps
+7. **Footer**: Links, contacto, horarios, redes sociales
 
-```javascript
-const slides = [
-  {
-    title: 'Tu título',
-    subtitle: 'Tu subtítulo',
-    description: 'Tu descripción',
-    image: 'URL_DE_TU_IMAGEN'
-  },
-  // ... más slides
-]
-```
+## 📱 Responsive
 
-### Modificar Colores
+- Mobile First approach
+- Breakpoints: 640px (tablet), 1024px (desktop)
+- Menu hamburguesa en móvil
 
-Edita las variables CSS en `src/index.css`:
+## 🎨 Sistema de Diseño
 
+### Espaciado (base 8px)
 ```css
-:root {
-  --primary-color: #1a1a1a;
-  --secondary-color: #d4af37;
-  /* ... más colores */
-}
+--space-xs: 0.5rem (8px)
+--space-sm: 1rem (16px)
+--space-md: 1.5rem (24px)
+--space-lg: 2rem (32px)
+--space-xl: 3rem (48px)
+--space-2xl: 4rem (64px)
+--space-3xl: 6rem (96px)
 ```
 
-### Actualizar Información de Contacto
+### Border Radius
+```css
+--radius-sm: 0.25rem (4px)
+--radius-md: 0.5rem (8px)
+--radius-lg: 1rem (16px)
+--radius-xl: 1.5rem (24px)
+```
 
-Edita `src/components/Footer.jsx` y `src/components/Header.jsx` con tu información.
+### Transiciones
+```css
+--transition-fast: 150ms ease-in-out
+--transition-base: 200ms ease-in-out
+--transition-slow: 300ms ease-in-out
+```
 
 ## 📄 Licencia
 
-Este proyecto es privado y pertenece a A2C Internacional.
-
-## 👨‍💻 Desarrollo
-
-Desarrollado con ❤️ para A2C Internacional
-
----
-
-**Nota**: Este sitio web está inspirado en diseños premium de concesionarios de vehículos de lujo y ha sido adaptado específicamente para A2C Internacional.
-
-
-
+© 2025 A2C INTERNATIONAL. Todos los derechos reservados.
