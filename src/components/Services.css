@@ -1,7 +1,7 @@
 .services {
-  padding: 6rem 0;
-  background: var(--bg-dark);
-  color: var(--text-light);
+  padding: var(--space-3xl) 0;
+  background: var(--secondary);
+  color: var(--text-on-dark);
 }
 
 .services-grid {
@@ -12,33 +12,33 @@
 
 .service-card {
   background: rgba(255, 255, 255, 0.05);
-  padding: 3rem 2rem;
-  border-radius: 8px;
+  padding: var(--space-xl) var(--space-lg);
+  border-radius: var(--radius-lg);
   text-align: center;
-  transition: var(--transition);
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  transition: var(--transition-base);
+  border: 1px solid rgba(192, 192, 192, 0.2);
 }
 
 .service-card:hover {
   transform: translateY(-10px);
   background: rgba(255, 255, 255, 0.08);
-  border-color: var(--secondary-color);
-  box-shadow: 0 15px 40px rgba(212, 175, 55, 0.2);
+  border-color: var(--primary);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 5px 10px rgba(0, 0, 0, 0.05);
 }
 
 .service-icon {
-  color: var(--secondary-color);
-  margin-bottom: 2rem;
+  color: var(--primary);
+  margin-bottom: var(--space-lg);
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .service-title {
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  margin-bottom: 1.5rem;
-  color: var(--text-light);
+  margin-bottom: var(--space-md);
+  color: var(--text-on-dark);
 }
 
 .service-description {
@@ -52,20 +52,20 @@
 .service-btn {
   display: inline-block;
   padding: 1rem 2rem;
-  background: var(--secondary-color);
-  color: var(--text-dark);
+  background: var(--accent-blue);
+  color: var(--text-on-dark);
   font-weight: 600;
-  border-radius: 4px;
-  transition: var(--transition);
+  border-radius: var(--radius-md);
+  transition: var(--transition-base);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.025em;
   font-size: 0.95rem;
 }
 
 .service-btn:hover {
-  background: var(--accent-color);
+  background: var(--accent-blue-hover);
   transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
 }
 
 @media (max-width: 968px) {

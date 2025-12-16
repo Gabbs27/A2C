@@ -1,10 +1,10 @@
 .footer {
-  background: var(--bg-dark);
-  color: var(--text-light);
+  background: var(--secondary);
+  color: var(--text-on-dark);
 }
 
 .footer-main {
-  padding: 5rem 0 3rem;
+  padding: var(--space-3xl) 0 var(--space-xl);
 }
 
 .footer-grid {
@@ -20,13 +20,14 @@
 
 .footer-logo {
   font-size: 1.8rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  letter-spacing: 2px;
+  font-weight: 900;
+  margin-bottom: var(--space-sm);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .footer-logo span {
-  color: var(--secondary-color);
+  color: var(--primary-light);
   font-weight: 300;
 }
 
@@ -47,22 +48,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  transition: var(--transition);
+  background: rgba(192, 192, 192, 0.1);
+  border-radius: var(--radius-full);
+  transition: var(--transition-base);
 }
 
 .social-link:hover {
-  background: var(--secondary-color);
-  color: var(--text-dark);
+  background: var(--primary);
+  color: var(--text-primary);
   transform: translateY(-3px);
 }
 
 .footer-title {
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   font-weight: 600;
-  margin-bottom: 1.5rem;
-  color: var(--secondary-color);
+  margin-bottom: var(--space-md);
+  color: var(--primary-light);
 }
 
 .footer-links {
@@ -74,12 +75,12 @@
 
 .footer-links a {
   color: rgba(255, 255, 255, 0.7);
-  transition: var(--transition);
+  transition: var(--transition-base);
   display: inline-block;
 }
 
 .footer-links a:hover {
-  color: var(--secondary-color);
+  color: var(--primary);
   transform: translateX(5px);
 }
 
@@ -97,7 +98,7 @@
 }
 
 .contact-item svg {
-  color: var(--secondary-color);
+  color: var(--primary);
   flex-shrink: 0;
   margin-top: 0.2rem;
 }
@@ -124,7 +125,7 @@
 
 .hours-list li span:first-child {
   font-weight: 600;
-  color: var(--text-light);
+  color: var(--text-on-dark);
 }
 
 .footer-bottom {
@@ -153,12 +154,12 @@
 
 .footer-bottom-links a {
   color: rgba(255, 255, 255, 0.6);
-  transition: var(--transition);
+  transition: var(--transition-base);
   font-size: 0.9rem;
 }
 
 .footer-bottom-links a:hover {
-  color: var(--secondary-color);
+  color: var(--primary);
 }
 
 @media (max-width: 968px) {

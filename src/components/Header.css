@@ -9,13 +9,14 @@
 }
 
 .header.scrolled {
-  background: rgba(10, 10, 10, 0.98);
+  background: rgba(26, 26, 26, 0.98);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
 }
 
 .header-top {
-  background: var(--bg-dark);
-  color: var(--text-light);
+  background: var(--background-dark);
+  color: var(--text-on-dark);
   padding: 0.5rem 0;
   font-size: 0.9rem;
 }
@@ -35,22 +36,22 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: var(--transition);
+  transition: var(--transition-base);
 }
 
 .phone-link:hover {
-  color: var(--secondary-color);
+  color: var(--primary);
 }
 
 .address {
-  color: var(--secondary-color);
+  color: var(--primary-light);
   font-weight: 500;
 }
 
 .header-main {
   background: rgba(26, 26, 26, 0.95);
   backdrop-filter: blur(10px);
-  padding: 1rem 0;
+  padding: 1.25rem 0;
 }
 
 .header-content {
@@ -61,15 +62,17 @@
 
 .logo h1 {
   font-size: 2rem;
-  font-weight: 700;
-  color: var(--text-light);
-  letter-spacing: 2px;
+  font-weight: 900;
+  color: var(--text-on-dark);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .logo h1 span {
-  color: var(--secondary-color);
+  color: var(--primary);
   font-weight: 300;
   margin-left: 0.5rem;
+  letter-spacing: 0.1em;
 }
 
 .nav {
@@ -79,11 +82,11 @@
 }
 
 .nav a {
-  color: var(--text-light);
+  color: var(--text-on-dark);
   font-weight: 500;
   position: relative;
   padding: 0.5rem 0;
-  transition: var(--transition);
+  transition: var(--transition-base);
 }
 
 .nav a::after {
@@ -93,12 +96,12 @@
   left: 0;
   width: 0;
   height: 2px;
-  background: var(--secondary-color);
-  transition: var(--transition);
+  background: var(--primary);
+  transition: var(--transition-base);
 }
 
 .nav a:hover {
-  color: var(--secondary-color);
+  color: var(--primary);
 }
 
 .nav a:hover::after {
@@ -108,8 +111,13 @@
 .mobile-menu-btn {
   display: none;
   background: transparent;
-  color: var(--text-light);
+  color: var(--text-on-dark);
   padding: 0.5rem;
+  transition: var(--transition-base);
+}
+
+.mobile-menu-btn:hover {
+  color: var(--primary);
 }
 
 @media (max-width: 968px) {
@@ -127,11 +135,11 @@
     right: -100%;
     width: 300px;
     height: 100vh;
-    background: var(--bg-dark);
+    background: var(--secondary);
     flex-direction: column;
     justify-content: center;
     gap: 2rem;
-    transition: var(--transition);
+    transition: var(--transition-base);
     padding: 2rem;
   }
 

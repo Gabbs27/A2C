@@ -1,0 +1,108 @@
+.contact {
+  padding: var(--space-3xl) 0;
+  background: var(--background-light);
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: var(--space-xl);
+  margin-top: var(--space-2xl);
+}
+
+.contact-info-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-lg);
+}
+
+.contact-card {
+  background: var(--background-gray);
+  padding: var(--space-lg);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  transition: var(--transition-base);
+  border: 1px solid var(--background-gray-dark);
+}
+
+.contact-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(192, 192, 192, 0.3), 0 2px 6px rgba(192, 192, 192, 0.2);
+  border-color: var(--primary);
+}
+
+.contact-icon {
+  color: var(--primary);
+  margin-bottom: var(--space-sm);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.contact-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.contact-card p {
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.contact-card p:last-child {
+  margin-bottom: 0;
+}
+
+.contact-link {
+  display: inline-block;
+  margin-top: var(--space-sm);
+  color: var(--accent-blue);
+  font-weight: 600;
+  transition: var(--transition-base);
+}
+
+.contact-link:hover {
+  color: var(--accent-blue-hover);
+  text-decoration: underline;
+}
+
+.map-container {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+  min-height: 400px;
+  border: 2px solid var(--background-gray-dark);
+}
+
+@media (max-width: 1024px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-info-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .map-container {
+    min-height: 350px;
+  }
+}
+
+@media (max-width: 640px) {
+  .contact {
+    padding: var(--space-2xl) 0;
+  }
+
+  .contact-info-section {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .map-container {
+    min-height: 300px;
+  }
+}
+

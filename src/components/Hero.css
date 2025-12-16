@@ -46,7 +46,7 @@
 .hero-content {
   position: relative;
   z-index: 2;
-  color: var(--text-light);
+  color: var(--text-on-dark);
   max-width: 700px;
   animation: slideInLeft 1s ease-out;
 }
@@ -63,25 +63,36 @@
 }
 
 .hero-title {
-  font-size: 4rem;
-  font-weight: 700;
+  font-size: 3.5rem;
+  font-weight: 800;
   margin-bottom: 1rem;
   line-height: 1.2;
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  text-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.8),
+    0 0 20px rgba(192, 192, 192, 0.5),
+    0 0 40px rgba(192, 192, 192, 0.3);
 }
 
 .hero-subtitle {
   font-size: 2rem;
-  color: var(--secondary-color);
+  color: var(--primary-light);
   margin-bottom: 1rem;
   font-weight: 300;
-  letter-spacing: 2px;
+  letter-spacing: 0.05em;
+  text-shadow: 
+    2px 2px 4px rgba(0, 0, 0, 0.8),
+    0 0 15px rgba(0, 0, 0, 0.6);
 }
 
 .hero-description {
   font-size: 1.5rem;
   margin-bottom: 2rem;
-  opacity: 0.9;
+  color: #FFFFFF;
+  text-shadow: 
+    1px 1px 3px rgba(0, 0, 0, 0.8),
+    0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .hero-buttons {
@@ -94,32 +105,32 @@
   padding: 1rem 2.5rem;
   font-size: 1.1rem;
   font-weight: 600;
-  border-radius: 4px;
-  transition: var(--transition);
+  border-radius: var(--radius-md);
+  transition: var(--transition-base);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.025em;
 }
 
 .btn-primary {
-  background: var(--secondary-color);
-  color: var(--text-dark);
+  background: var(--accent-blue);
+  color: var(--text-on-dark);
 }
 
 .btn-primary:hover {
-  background: var(--accent-color);
+  background: var(--accent-blue-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
 }
 
 .btn-secondary {
   background: transparent;
-  color: var(--text-light);
-  border: 2px solid var(--secondary-color);
+  color: var(--text-on-dark);
+  border: 2px solid var(--primary);
 }
 
 .btn-secondary:hover {
-  background: var(--secondary-color);
-  color: var(--text-dark);
+  background: var(--primary);
+  color: var(--text-primary);
   transform: translateY(-2px);
 }
 
@@ -127,18 +138,20 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.2);
-  color: var(--text-light);
+  background: rgba(192, 192, 192, 0.2);
+  color: var(--text-on-dark);
   border: none;
   padding: 1rem;
   cursor: pointer;
-  transition: var(--transition);
+  transition: var(--transition-base);
   z-index: 10;
   backdrop-filter: blur(5px);
+  border-radius: var(--radius-md);
 }
 
 .slider-btn:hover {
-  background: rgba(212, 175, 55, 0.8);
+  background: rgba(192, 192, 192, 0.9);
+  color: var(--text-primary);
 }
 
 .slider-btn.prev {
@@ -166,11 +179,11 @@
   background: rgba(255, 255, 255, 0.5);
   border: none;
   cursor: pointer;
-  transition: var(--transition);
+  transition: var(--transition-base);
 }
 
 .dot.active {
-  background: var(--secondary-color);
+  background: var(--primary);
   transform: scale(1.3);
 }
 
