@@ -24,15 +24,12 @@ const Header = () => {
         <div className="container">
           <div className="header-top-content">
             <div className="contact-info">
-              <a href="tel:+1234567890" className="phone-link">
-                <FiPhone /> Ventas — (609) 245-6634
-              </a>
-              <a href="tel:+1234567891" className="phone-link">
-                <FiPhone /> Servicio — (609) 245-6634
+              <a href="tel:+18294470259" className="phone-link">
+                <FiPhone /> Ventas — +1 (829) 447-0259
               </a>
             </div>
             <div className="address">
-              1723 N. Olden Ave
+              Avenida 6, Santo Domingo, RD
             </div>
           </div>
         </div>
@@ -42,16 +39,17 @@ const Header = () => {
         <div className="container">
           <div className="header-content">
             <div className="logo">
-              <h1>A2C <span>Internacional</span></h1>
+              <h1>A2C <span>INTERNATIONAL</span></h1>
             </div>
 
             <nav className={`nav ${isMobileMenuOpen ? 'active' : ''}`}>
               <a href="#shop" onClick={() => setIsMobileMenuOpen(false)}>Comprar</a>
-              <a href="#vehicles" onClick={() => setIsMobileMenuOpen(false)}>Vehículos Eléctricos</a>
-              <a href="#sell" onClick={() => setIsMobileMenuOpen(false)}>Vender/Intercambiar</a>
+              <a href="#vehicles" onClick={() => setIsMobileMenuOpen(false)}>Vehículos</a>
+              <a href="#sell" onClick={() => setIsMobileMenuOpen(false)}>Vender</a>
               <a href="#finance" onClick={() => setIsMobileMenuOpen(false)}>Financiamiento</a>
               <a href="#service" onClick={() => setIsMobileMenuOpen(false)}>Servicio</a>
               <a href="#about" onClick={() => setIsMobileMenuOpen(false)}>Acerca de</a>
+              <a href="#contact" onClick={() => setIsMobileMenuOpen(false)}>Contacto</a>
             </nav>
 
             <button className="mobile-menu-btn" onClick={toggleMobileMenu}>

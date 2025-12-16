@@ -9,10 +9,10 @@ const Footer = () => {
         <div className="container">
           <div className="footer-grid">
             <div className="footer-section">
-              <h3 className="footer-logo">A2C <span>Internacional</span></h3>
+              <h3 className="footer-logo">A2C <span>INTERNATIONAL</span></h3>
               <p className="footer-description">
                 Tu destino para vehículos de lujo y exóticos. Experiencia premium 
-                en cada transacción.
+                en cada transacción. SALE AND SERVICES.
               </p>
               <div className="social-links">
                 <a href="#" className="social-link" aria-label="Facebook">
@@ -43,10 +43,7 @@ const Footer = () => {
               <div className="contact-info-footer">
                 <div className="contact-item">
                   <FiPhone />
-                  <div>
-                    <p>Ventas: (609) 245-6634</p>
-                    <p>Servicio: (609) 245-6634</p>
-                  </div>
+                  <p>Ventas: +1 (829) 447-0259</p>
                 </div>
                 <div className="contact-item">
                   <FiMail />
@@ -54,7 +51,10 @@ const Footer = () => {
                 </div>
                 <div className="contact-item">
                   <FiMapPin />
-                  <p>1723 N. Olden Ave</p>
+                  <div>
+                    <p>Avenida 6, Santo Domingo 11114</p>
+                    <p>República Dominicana</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -83,7 +83,7 @@ const Footer = () => {
       <div className="footer-bottom">
         <div className="container">
           <div className="footer-bottom-content">
-            <p>&copy; 2025 A2C Internacional. Todos los derechos reservados.</p>
+            <p>&copy; 2025 A2C INTERNATIONAL. Todos los derechos reservados.</p>
             <div className="footer-bottom-links">
               <a href="#">Política de Privacidad</a>
               <a href="#">Términos de Servicio</a>
