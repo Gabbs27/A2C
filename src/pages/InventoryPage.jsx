@@ -3,6 +3,8 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import { FiSearch, FiFilter, FiX, FiChevronDown } from 'react-icons/fi'
 import { supabase } from '../lib/supabase'
 import VehicleCard from '../components/VehicleCard'
+import LoadingSkeleton from '../components/LoadingSkeleton'
+import EmptyState from '../components/EmptyState'
 import './InventoryPage.css'
 
 const BODY_TYPES = ['Todos', 'Sedan', 'SUV', 'Pickup', 'Coupe', 'Convertible', 'Van', 'Truck']
@@ -202,9 +204,14 @@ const InventoryPage = () => {
     return (
       <div className="inventory-page">
         <div className="container">
-          <div className="inventory-loading">
-            <div className="inventory-loading__spinner" />
-            <p>Cargando inventario...</p>
+          <div className="inventory-header">
+            <h1 className="inventory-title">Nuestros Veh&iacute;culos</h1>
+            <p className="inventory-subtitle">Cargando inventario...</p>
+          </div>
+          <div className="inventory-grid">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <LoadingSkeleton key={i} />
+            ))}
           </div>
         </div>
       </div>
@@ -399,12 +406,12 @@ const InventoryPage = () => {
             ))}
           </div>
         ) : (
-          <div className="inventory-empty">
-            <p className="inventory-empty__text">No se encontraron veh&iacute;culos con estos filtros</p>
-            <button className="inventory-empty__btn" onClick={clearFilters}>
-              Limpiar Filtros
-            </button>
-          </div>
+          <EmptyState
+            icon={FiSearch}
+            title="No se encontraron vehiculos"
+            message="No hay vehiculos que coincidan con los filtros seleccionados. Intenta ajustar tus criterios de busqueda."
+            action={{ label: 'Limpiar Filtros', onClick: clearFilters }}
+          />
         )}
 
         {/* Compare Floating Bar */}
