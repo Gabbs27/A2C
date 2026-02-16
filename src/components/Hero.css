@@ -134,6 +134,69 @@
   transform: translateY(-2px);
 }
 
+/* Hero Quick Search */
+.hero-search {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: 2rem;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+  padding: 0.375rem;
+  max-width: 420px;
+  border: 1px solid rgba(192, 192, 192, 0.2);
+}
+
+.hero-search__select {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  color: var(--text-on-dark);
+  border: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23C0C0C0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2rem;
+}
+
+.hero-search__select:focus {
+  outline: none;
+}
+
+.hero-search__select option {
+  background: var(--secondary);
+  color: var(--text-on-dark);
+}
+
+.hero-search__btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--accent-blue);
+  color: var(--text-on-dark);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-base);
+  white-space: nowrap;
+}
+
+.hero-search__btn:hover {
+  background: var(--accent-blue-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
 .slider-btn {
   position: absolute;
   top: 50%;
@@ -200,6 +263,10 @@
     font-size: 1.2rem;
   }
 
+  .hero-search {
+    max-width: 380px;
+  }
+
   .slider-btn {
     padding: 0.7rem;
   }
@@ -235,6 +302,21 @@
     padding: 0.8rem 2rem;
     font-size: 1rem;
     width: 100%;
+  }
+
+  .hero-search {
+    max-width: 100%;
+  }
+
+  .hero-search__select {
+    font-size: 0.85rem;
+    padding: 0.65rem 0.75rem;
+    padding-right: 1.75rem;
+  }
+
+  .hero-search__btn {
+    font-size: 0.85rem;
+    padding: 0.65rem 1rem;
   }
 
   .slider-dots {

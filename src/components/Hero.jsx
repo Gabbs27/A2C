@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from 'react'
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
+import { FiChevronLeft, FiChevronRight, FiSearch } from 'react-icons/fi'
 import './Hero.css'
+
+const BRANDS = [
+  'Mercedes-Benz', 'BMW', 'Porsche', 'Land Rover', 'Toyota',
+  'Honda', 'Hyundai', 'Audi', 'Lexus', 'Jeep'
+]
 
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0)
+  const [selectedBrand, setSelectedBrand] = useState('')
+  const navigate = useNavigate()
 
   const slides = [
     {
@@ -48,6 +56,14 @@ const Hero = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)
   }
 
+  const handleSearch = () => {
+    if (selectedBrand) {
+      navigate(`/inventario?brand=${encodeURIComponent(selectedBrand)}`)
+    } else {
+      navigate('/inventario')
+    }
+  }
+
   return (
     <section className="hero">
       <div className="hero-slider">
@@ -66,6 +82,22 @@ const Hero = () => {
                 <div className="hero-buttons">
                   <button className="btn btn-primary">Comprar un Auto</button>
                   <button className="btn btn-secondary">Vender un Auto</button>
+                </div>
+                <div className="hero-search">
+                  <select
+                    className="hero-search__select"
+                    value={selectedBrand}
+                    onChange={(e) => setSelectedBrand(e.target.value)}
+                  >
+                    <option value="">Todas las Marcas</option>
+                    {BRANDS.map(brand => (
+                      <option key={brand} value={brand}>{brand}</option>
+                    ))}
+                  </select>
+                  <button className="hero-search__btn" onClick={handleSearch}>
+                    <FiSearch size={18} />
+                    Buscar
+                  </button>
                 </div>
               </div>
             </div>
