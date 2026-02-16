@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../lib/supabase'
 import { FiPlus, FiEdit, FiTrash2, FiLogOut, FiSave } from 'react-icons/fi'
+import EmptyState from '../../components/EmptyState'
 import './DashboardPage.css'
 
 const DashboardPage = () => {
@@ -202,6 +203,8 @@ const DashboardPage = () => {
     )
   }
 
+  const navigateToAdd = () => navigate('/admin/vehiculos/nuevo')
+
   return (
     <div className="dashboard-page">
       {/* Header */}
@@ -289,13 +292,13 @@ const DashboardPage = () => {
         </div>
 
         {vehicles.length === 0 ? (
-          <div className="empty-state">
-            <p>No hay veh&iacute;culos registrados a&uacute;n.</p>
-            <Link to="/admin/vehiculos/nuevo" className="add-vehicle-btn">
-              <FiPlus />
-              Agregar Primer Veh&iacute;culo
-            </Link>
-          </div>
+          <EmptyState
+            icon={FiPlus}
+            title="No hay vehiculos aun"
+            message="Comienza agregando tu primer vehiculo al inventario."
+            action={{ label: 'Agregar Vehiculo', onClick: navigateToAdd }}
+            dark
+          />
         ) : (
           <div className="vehicles-table-wrapper">
             <table className="vehicles-table">
