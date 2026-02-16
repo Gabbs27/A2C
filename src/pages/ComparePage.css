@@ -277,6 +277,13 @@
     font-size: 1.5rem;
   }
 
+  .compare-table-wrapper {
+    margin: 0 calc(-1 * var(--space-sm));
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
   .compare-table__label-cell,
   .compare-table__label {
     width: 120px;
@@ -299,5 +306,45 @@
 
   .compare-vehicle-card__price {
     font-size: 1rem;
+  }
+
+  .compare-action-btn {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .compare-back {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .compare-empty__link {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .compare-table__label-cell,
+  .compare-table__label {
+    width: 100px;
+    min-width: 100px;
+    font-size: 0.75rem;
+    padding: 8px 10px;
+  }
+
+  .compare-table__value {
+    font-size: 0.8rem;
+    padding: 6px 8px;
+  }
+
+  .compare-vehicle-card__image {
+    max-width: 120px;
+  }
+
+  .compare-table__vehicle-header {
+    padding: var(--space-sm);
   }
 }

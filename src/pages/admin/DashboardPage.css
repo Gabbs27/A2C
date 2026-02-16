@@ -456,7 +456,7 @@
 
 @media (max-width: 768px) {
   .dashboard-page {
-    padding: 120px var(--space-sm) var(--space-xl);
+    padding: 80px var(--space-sm) var(--space-xl);
   }
 
   .dashboard-header {
@@ -465,8 +465,20 @@
     align-items: flex-start;
   }
 
+  .dashboard-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .dashboard-logout-btn {
+    min-height: 44px;
+  }
+
   .stats-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .stat-card {
+    padding: var(--space-md);
   }
 
   .stat-card .stat-number {
@@ -476,6 +488,43 @@
   .vehicles-table th:nth-child(4),
   .vehicles-table td:nth-child(4) {
     display: none;
+  }
+
+  .vehicles-table-wrapper {
+    margin: 0 calc(-1 * var(--space-sm));
+    border-radius: 0;
+  }
+
+  .add-vehicle-btn {
+    min-height: 44px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .exchange-rate-form input {
+    max-width: none;
+  }
+
+  .exchange-rate-form button {
+    min-height: 44px;
+  }
+
+  .action-btn {
+    min-height: 44px;
+    padding: 8px 12px;
+  }
+
+  .status-toggle-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .quick-action-card {
+    padding: var(--space-md);
+  }
+
+  .vehicles-section {
+    padding: var(--space-md);
   }
 }
 

@@ -173,3 +173,61 @@
   cursor: pointer;
   accent-color: var(--accent-blue);
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .vehicle-card__image-wrapper {
+    height: 180px;
+  }
+
+  .vehicle-card__body {
+    padding: var(--space-sm);
+  }
+
+  .vehicle-card__title {
+    font-size: 0.95rem;
+  }
+
+  .vehicle-card__price-usd {
+    font-size: 1.1rem;
+  }
+
+  .vehicle-card__badge {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+  }
+
+  .vehicle-card__compare-label {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .vehicle-card__compare-checkbox {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .vehicle-card__image-wrapper {
+    height: 200px;
+  }
+
+  .vehicle-card__body {
+    padding: var(--space-md) var(--space-sm);
+  }
+
+  .vehicle-card__title {
+    font-size: 1rem;
+  }
+
+  .vehicle-card__price-usd {
+    font-size: 1.15rem;
+  }
+
+  .vehicle-card__status {
+    top: 8px;
+    right: 8px;
+  }
+}
