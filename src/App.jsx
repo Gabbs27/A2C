@@ -1,6 +1,7 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
+import ProtectedRoute from './components/ProtectedRoute'
 import HomePage from './pages/HomePage'
 import InventoryPage from './pages/InventoryPage'
 import VehicleDetailPage from './pages/VehicleDetailPage'
@@ -19,9 +20,9 @@ function App() {
         <Route path="vehiculo/:id" element={<VehicleDetailPage />} />
         <Route path="comparar" element={<ComparePage />} />
         <Route path="admin/login" element={<LoginPage />} />
-        <Route path="admin" element={<DashboardPage />} />
-        <Route path="admin/vehiculos/nuevo" element={<VehicleFormPage />} />
-        <Route path="admin/vehiculos/:id" element={<VehicleFormPage />} />
+        <Route path="admin" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        <Route path="admin/vehiculos/nuevo" element={<ProtectedRoute><VehicleFormPage /></ProtectedRoute>} />
+        <Route path="admin/vehiculos/:id" element={<ProtectedRoute><VehicleFormPage /></ProtectedRoute>} />
       </Route>
     </Routes>
   )
