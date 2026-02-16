@@ -389,8 +389,31 @@
     flex-direction: column;
   }
 
+  .inventory-search__input {
+    padding: 14px 40px 14px 42px;
+    font-size: 1rem;
+    min-height: 48px;
+  }
+
+  .inventory-filter-toggle {
+    min-height: 48px;
+    justify-content: center;
+  }
+
   .inventory-filters__grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .inventory-filter-group select,
+  .inventory-filter-group input {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    min-height: 44px;
+  }
+
+  .inventory-sort__select {
+    min-height: 44px;
+    padding: 8px 12px;
   }
 
   .inventory-grid {
@@ -402,6 +425,15 @@
     flex-direction: column;
     text-align: center;
     padding: 0 var(--space-sm);
+  }
+
+  .inventory-compare-bar__btn,
+  .inventory-compare-bar__clear {
+    min-height: 44px;
+  }
+
+  .inventory-filters__clear {
+    min-height: 44px;
   }
 }
 

@@ -127,6 +127,11 @@
 
   .mobile-menu-btn {
     display: block;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .nav {
@@ -135,26 +140,39 @@
     right: -100%;
     width: 300px;
     height: 100vh;
+    height: 100dvh;
     background: var(--secondary);
     flex-direction: column;
     justify-content: center;
-    gap: 2rem;
-    transition: var(--transition-base);
+    gap: 1.5rem;
+    transition: right 0.3s ease-in-out;
     padding: 2rem;
+    z-index: 1001;
+    overflow-y: auto;
   }
 
   .nav.active {
     right: 0;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
   }
 
   .nav a {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     width: 100%;
     text-align: center;
+    padding: 12px 0;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .logo h1 {
     font-size: 1.5rem;
+  }
+
+  .header-main {
+    padding: 0.75rem 0;
   }
 }
 

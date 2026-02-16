@@ -572,7 +572,7 @@
 /* Responsive */
 @media (max-width: 768px) {
   .vehicle-form-page {
-    padding: 120px var(--space-sm) var(--space-xl);
+    padding: 80px var(--space-sm) var(--space-xl);
   }
 
   .vehicle-form-header {
@@ -581,13 +581,59 @@
     align-items: flex-start;
   }
 
+  .vehicle-form-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .back-btn {
+    min-height: 44px;
+  }
+
   .form-grid,
   .form-grid-3 {
     grid-template-columns: 1fr;
   }
 
+  .form-section {
+    padding: var(--space-md);
+  }
+
+  .vehicle-form .form-group input,
+  .vehicle-form .form-group select,
+  .vehicle-form .form-group textarea {
+    min-height: 44px;
+    font-size: 1rem;
+  }
+
+  .features-add-btn {
+    min-height: 44px;
+  }
+
+  .common-feature-btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    min-height: 36px;
+  }
+
+  .image-upload-area {
+    padding: var(--space-md);
+  }
+
   .image-previews {
     grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+
+  .image-url-input-row {
+    flex-direction: column;
+  }
+
+  .image-url-input {
+    min-height: 44px;
+  }
+
+  .image-url-btn {
+    min-height: 44px;
+    justify-content: center;
   }
 
   .form-submit-section {
@@ -598,5 +644,11 @@
   .submit-btn,
   .cancel-btn {
     justify-content: center;
+    min-height: 48px;
+  }
+
+  .checkbox-group input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
   }
 }
