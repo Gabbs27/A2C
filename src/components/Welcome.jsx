@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import './Welcome.css'
 
 const Welcome = () => {
@@ -9,13 +10,13 @@ const Welcome = () => {
           <div className="tagline">SALE AND SERVICES</div>
           <h2 className="section-title">A2C INTERNATIONAL: Construido para Impresionar</h2>
           <p className="welcome-text">
-            Bienvenido a A2C INTERNATIONAL, donde cada vehículo es seleccionado cuidadosamente 
-            por su estilo, potencia y rendimiento. Ya sea que estés comprando, vendiendo o 
-            dando servicio a tu auto, estamos aquí para hacer tu experiencia rápida, fácil e 
+            Bienvenido a A2C INTERNATIONAL, donde cada vehículo es seleccionado cuidadosamente
+            por su estilo, potencia y rendimiento. Ya sea que estés comprando, vendiendo o
+            dando servicio a tu auto, estamos aquí para hacer tu experiencia rápida, fácil e
             inolvidable. Alcancemos la grandeza juntos durante tu visita.
           </p>
           <div className="welcome-buttons">
-            <a href="#shop" className="btn btn-primary">Comenzar a Comprar</a>
+            <Link to="/inventario" className="btn btn-primary">Comenzar a Comprar</Link>
             <a href="#contact" className="btn btn-outline">Encuéntranos</a>
           </div>
         </div>
