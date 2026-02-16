@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { FiMenu, FiX, FiPhone } from 'react-icons/fi'
 import './Header.css'
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const location = useLocation()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,13 +41,15 @@ const Header = () => {
         <div className="container">
           <div className="header-content">
             <div className="logo">
-              <h1>A2C <span>INTERNATIONAL</span></h1>
+              <Link to="/">
+                <h1>A2C <span>INTERNATIONAL</span></h1>
+              </Link>
             </div>
 
             <nav className={`nav ${isMobileMenuOpen ? 'active' : ''}`}>
-              <a href="#shop" onClick={() => setIsMobileMenuOpen(false)}>Comprar</a>
-              <a href="#vehicles" onClick={() => setIsMobileMenuOpen(false)}>Vehículos</a>
-              <a href="#sell" onClick={() => setIsMobileMenuOpen(false)}>Vender</a>
+              <Link to="/inventario" onClick={() => setIsMobileMenuOpen(false)}>Comprar</Link>
+              <Link to="/inventario" onClick={() => setIsMobileMenuOpen(false)}>Vehiculos</Link>
+              <a href="https://wa.me/18294470259?text=Hola, me interesa vender mi vehiculo" onClick={() => setIsMobileMenuOpen(false)}>Vender</a>
               <a href="#finance" onClick={() => setIsMobileMenuOpen(false)}>Financiamiento</a>
               <a href="#service" onClick={() => setIsMobileMenuOpen(false)}>Servicio</a>
               <a href="#about" onClick={() => setIsMobileMenuOpen(false)}>Acerca de</a>
@@ -63,6 +67,3 @@ const Header = () => {
 }
 
 export default Header
-
-
-

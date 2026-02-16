@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { FiPhone, FiMail, FiMapPin, FiFacebook, FiInstagram, FiTwitter } from 'react-icons/fi'
 import './Footer.css'
 
@@ -30,7 +31,7 @@ const Footer = () => {
             <div className="footer-section">
               <h4 className="footer-title">Enlaces Rápidos</h4>
               <ul className="footer-links">
-                <li><a href="#shop">Inventario</a></li>
+                <li><Link to="/inventario">Inventario</Link></li>
                 <li><a href="#vehicles">Vehículos Eléctricos</a></li>
                 <li><a href="#sell">Vender/Intercambiar</a></li>
                 <li><a href="#finance">Financiamiento</a></li>
