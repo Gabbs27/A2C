@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
-import { FiSave, FiX, FiPlus, FiUpload, FiArrowLeft, FiImage } from 'react-icons/fi'
+import { FiSave, FiX, FiPlus, FiUpload, FiArrowLeft, FiImage, FiLink, FiLoader } from 'react-icons/fi'
 import './VehicleFormPage.css'
 
 const COMMON_FEATURES = [
@@ -59,6 +59,11 @@ const VehicleFormPage = () => {
   const [primaryImageIndex, setPrimaryImageIndex] = useState(-1) // index in existingImages, or 'new-{idx}' for new images
   const [primaryType, setPrimaryType] = useState('existing') // 'existing' or 'new'
   const [removedExistingImages, setRemovedExistingImages] = useState([])
+
+  // Image URL import state
+  const [imageUrl, setImageUrl] = useState('')
+  const [imageUrlLoading, setImageUrlLoading] = useState(false)
+  const [imageUrlError, setImageUrlError] = useState('')
 
   // Fetch existing vehicle data for editing
   useEffect(() => {
@@ -222,6 +227,61 @@ const VehicleFormPage = () => {
   const handleSetPrimary = (type, index) => {
     setPrimaryType(type)
     setPrimaryImageIndex(index)
+  }
+
+  // Import image from URL
+  const handleImportFromUrl = async () => {
+    const url = imageUrl.trim()
+    if (!url) return
+
+    // Basic URL validation
+    try {
+      new URL(url)
+    } catch {
+      setImageUrlError('URL no valida. Ingrese una URL completa (ej: https://ejemplo.com/imagen.jpg)')
+      return
+    }
+
+    setImageUrlLoading(true)
+    setImageUrlError('')
+
+    try {
+      const response = await fetch(url)
+
+      if (!response.ok) {
+        throw new Error(`Error al descargar la imagen (${response.status})`)
+      }
+
+      const contentType = response.headers.get('content-type') || ''
+      if (!contentType.startsWith('image/')) {
+        throw new Error('La URL no apunta a una imagen valida.')
+      }
+
+      const blob = await response.blob()
+      const extension = contentType.split('/')[1]?.split(';')[0] || 'jpg'
+      const fileName = `imported-${Date.now()}.${extension}`
+      const file = new File([blob], fileName, { type: blob.type })
+
+      const newFiles = [...newImageFiles, file]
+      setNewImageFiles(newFiles)
+
+      const previewUrl = URL.createObjectURL(blob)
+      setNewImagePreviews((prev) => [...prev, previewUrl])
+
+      // If no primary set yet, set this image as primary
+      if (existingImages.length === 0 && newImageFiles.length === 0 && primaryImageIndex === -1) {
+        setPrimaryImageIndex(0)
+        setPrimaryType('new')
+      }
+
+      setImageUrl('')
+      setImageUrlError('')
+    } catch (err) {
+      console.error('Error importing image from URL:', err)
+      setImageUrlError(err.message || 'Error al importar la imagen. Verifique la URL e intente de nuevo.')
+    } finally {
+      setImageUrlLoading(false)
+    }
   }
 
   // Form validation
@@ -737,6 +797,45 @@ const VehicleFormPage = () => {
             <div className="image-upload-text">
               <span>Click para seleccionar</span> o arrastra imagenes aqui
             </div>
+          </div>
+
+          {/* Import from URL */}
+          <div className="image-url-import">
+            <label className="image-url-label">
+              <FiLink />
+              Importar imagen desde URL
+            </label>
+            <div className="image-url-input-row">
+              <input
+                type="text"
+                value={imageUrl}
+                onChange={(e) => { setImageUrl(e.target.value); setImageUrlError('') }}
+                placeholder="https://example.com/image.jpg"
+                className="image-url-input"
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleImportFromUrl() } }}
+              />
+              <button
+                type="button"
+                className="image-url-btn"
+                onClick={handleImportFromUrl}
+                disabled={imageUrlLoading || !imageUrl.trim()}
+              >
+                {imageUrlLoading ? (
+                  <>
+                    <FiLoader className="spin-icon" />
+                    Importando...
+                  </>
+                ) : (
+                  <>
+                    <FiUpload />
+                    Importar
+                  </>
+                )}
+              </button>
+            </div>
+            {imageUrlError && (
+              <div className="image-url-error">{imageUrlError}</div>
+            )}
           </div>
 
           {(existingImages.length > 0 || newImagePreviews.length > 0) && (
