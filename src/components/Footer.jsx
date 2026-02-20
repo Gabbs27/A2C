@@ -84,7 +84,7 @@ const Footer = () => {
       <div className="footer-bottom">
         <div className="container">
           <div className="footer-bottom-content">
-            <p>&copy; 2025 A2C INTERNATIONAL. Todos los derechos reservados.</p>
+            <p>&copy; 2026 A2C INTERNATIONAL. Todos los derechos reservados.</p>
             <div className="footer-bottom-links">
               <a href="#">Política de Privacidad</a>
               <a href="#">Términos de Servicio</a>
@@ -97,6 +97,3 @@ const Footer = () => {
 }
 
 export default Footer
-
-
-

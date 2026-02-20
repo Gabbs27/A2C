@@ -29,7 +29,7 @@ const Features = () => {
   return (
     <section className="features" id="vehicles">
       <div className="container">
-        <h2 className="section-title-center">¿Por Qué Elegir A2C Internacional?</h2>
+        <h2 className="section-title section-title--center">¿Por Qué Elegir A2C Internacional?</h2>
         <div className="features-grid">
           {features.map((feature, index) => (
             <div key={index} className="feature-item">

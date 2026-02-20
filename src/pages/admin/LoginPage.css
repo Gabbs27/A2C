@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 120px 0 60px;
+  padding: var(--header-height) 0 var(--space-xl);
   background: var(--background-dark);
 }
 
@@ -23,7 +23,7 @@
 }
 
 .login-branding h1 {
-  font-size: 1.8rem;
+  font-size: var(--text-3xl);
   font-weight: 700;
   color: var(--primary);
   letter-spacing: 2px;
@@ -31,17 +31,17 @@
 
 .login-branding h1 span {
   display: block;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   font-weight: 300;
   letter-spacing: 4px;
   color: var(--primary-light);
-  margin-top: 4px;
+  margin-top: var(--space-2xs);
 }
 
 .login-branding p {
   color: var(--text-tertiary);
   margin-top: var(--space-sm);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 .login-form {
@@ -58,7 +58,7 @@
 
 .form-group label {
   color: var(--primary-light);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   letter-spacing: 0.5px;
 }
@@ -67,9 +67,9 @@
   background: var(--secondary-dark);
   border: 1px solid var(--primary-dark);
   border-radius: var(--radius-md);
-  padding: 12px 16px;
+  padding: var(--space-sm);
   color: var(--text-on-dark);
-  font-size: 1rem;
+  font-size: var(--text-base);
   font-family: inherit;
   transition: border-color var(--transition-base);
   outline: none;
@@ -81,16 +81,16 @@
 
 .form-group input:focus {
   border-color: var(--accent-blue);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 0 0 2px var(--color-focus);
 }
 
 .login-error {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: var(--color-error-light);
+  border: 1px solid var(--color-error-border);
   border-radius: var(--radius-md);
-  padding: 10px 14px;
-  color: #ef4444;
-  font-size: 0.85rem;
+  padding: var(--space-xs) var(--space-sm);
+  color: var(--color-error);
+  font-size: var(--text-sm);
   text-align: center;
 }
 
@@ -99,8 +99,8 @@
   color: var(--secondary-dark);
   border: none;
   border-radius: var(--radius-md);
-  padding: 14px;
-  font-size: 1rem;
+  padding: var(--space-sm);
+  font-size: var(--text-base);
   font-weight: 600;
   letter-spacing: 1px;
   cursor: pointer;
@@ -119,6 +119,12 @@
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+}
+
+@media (max-width: 768px) {
+  .login-page {
+    padding-top: var(--header-height-mobile);
+  }
 }
 
 @media (max-width: 480px) {

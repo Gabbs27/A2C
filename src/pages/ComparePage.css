@@ -1,5 +1,5 @@
 .compare-page {
-  padding-top: 120px;
+  padding-top: var(--header-height);
   padding-bottom: var(--space-3xl);
   min-height: 100vh;
   background: var(--background-light);
@@ -16,19 +16,6 @@
   color: var(--text-secondary);
 }
 
-.compare-loading__spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--background-gray-dark);
-  border-top-color: var(--primary-dark);
-  border-radius: 50%;
-  animation: compareSpin 0.8s linear infinite;
-}
-
-@keyframes compareSpin {
-  to { transform: rotate(360deg); }
-}
-
 /* Empty State */
 .compare-empty {
   display: flex;
@@ -41,26 +28,26 @@
 }
 
 .compare-empty h2 {
-  font-size: 1.5rem;
+  font-size: var(--text-2xl);
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .compare-empty p {
   color: var(--text-secondary);
-  font-size: 1rem;
+  font-size: var(--text-base);
 }
 
 .compare-empty__link {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 24px;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md);
   background: var(--secondary);
   color: var(--text-on-dark);
   border-radius: var(--radius-md);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   transition: background var(--transition-fast);
 }
 
@@ -76,8 +63,8 @@
 .compare-back {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
+  gap: var(--space-xs);
+  font-size: var(--text-sm);
   color: var(--accent-blue);
   margin-bottom: var(--space-sm);
   transition: color var(--transition-fast);
@@ -88,7 +75,7 @@
 }
 
 .compare-title {
-  font-size: 2rem;
+  font-size: var(--text-3xl);
   font-weight: 800;
   color: var(--text-primary);
 }
@@ -127,7 +114,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-xs);
 }
 
 .compare-vehicle-card__image {
@@ -153,43 +140,42 @@
   justify-content: center;
   background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
   color: var(--text-tertiary);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
 }
 
 .compare-vehicle-card__title {
-  font-size: 1rem;
+  font-size: var(--text-base);
   font-weight: 700;
   color: var(--text-primary);
 }
 
 .compare-vehicle-card__year {
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   color: var(--text-secondary);
 }
 
 .compare-vehicle-card__price {
-  font-size: 1.15rem;
+  font-size: var(--text-lg);
   font-weight: 700;
   color: var(--text-primary);
 }
 
 /* Section Headers */
 .compare-table__section-header td {
-  padding: 12px 16px;
+  padding: var(--space-sm);
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--text-secondary);
-  background: var(--secondary);
   color: var(--text-on-dark);
+  background: var(--secondary);
   border-top: 2px solid var(--secondary-dark);
 }
 
 /* Data Rows */
 .compare-table__label {
-  padding: 10px 16px;
-  font-size: 0.85rem;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--text-secondary);
   background: var(--background-gray);
@@ -200,8 +186,8 @@
 }
 
 .compare-table__value {
-  padding: 10px 16px;
-  font-size: 0.9rem;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--text-sm);
   color: var(--text-primary);
   text-align: center;
   border-left: 1px solid var(--background-gray-dark);
@@ -223,7 +209,7 @@
 }
 
 .compare-feature-check {
-  color: #16a34a;
+  color: var(--color-success);
 }
 
 .compare-feature-missing {
@@ -240,13 +226,13 @@
 
 .compare-action-btn {
   display: inline-block;
-  padding: 8px 16px;
+  padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-md);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   text-decoration: none;
   transition: all var(--transition-fast);
-  margin: 4px;
+  margin: var(--space-2xs);
 }
 
 .compare-action-btn--detail {
@@ -259,22 +245,22 @@
 }
 
 .compare-action-btn--whatsapp {
-  background: #25d366;
-  color: #fff;
+  background: var(--color-whatsapp);
+  color: var(--text-on-dark);
 }
 
 .compare-action-btn--whatsapp:hover {
-  background: #20bd5a;
+  background: var(--color-whatsapp-hover);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .compare-page {
-    padding-top: 80px;
+    padding-top: var(--header-height-mobile);
   }
 
   .compare-title {
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
   }
 
   .compare-table-wrapper {
@@ -288,12 +274,12 @@
   .compare-table__label {
     width: 120px;
     min-width: 120px;
-    font-size: 0.8rem;
+    font-size: var(--text-sm);
   }
 
   .compare-table__value {
-    font-size: 0.85rem;
-    padding: 8px 12px;
+    font-size: var(--text-sm);
+    padding: var(--space-xs) var(--space-sm);
   }
 
   .compare-vehicle-card__image {
@@ -301,11 +287,11 @@
   }
 
   .compare-vehicle-card__title {
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
   }
 
   .compare-vehicle-card__price {
-    font-size: 1rem;
+    font-size: var(--text-base);
   }
 
   .compare-action-btn {
@@ -331,13 +317,13 @@
   .compare-table__label {
     width: 100px;
     min-width: 100px;
-    font-size: 0.75rem;
-    padding: 8px 10px;
+    font-size: var(--text-xs);
+    padding: var(--space-xs);
   }
 
   .compare-table__value {
-    font-size: 0.8rem;
-    padding: 6px 8px;
+    font-size: var(--text-sm);
+    padding: var(--space-xs);
   }
 
   .compare-vehicle-card__image {

@@ -472,7 +472,7 @@ const VehicleFormPage = () => {
     return (
       <div className="vehicle-form-page">
         <div className="form-loading">
-          <div className="spinner" />
+          <div className="spinner spinner--dark" />
           <p>Cargando vehiculo...</p>
         </div>
       </div>

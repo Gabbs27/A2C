@@ -7,8 +7,9 @@ import WhatsAppButton from './WhatsAppButton'
 const Layout = () => {
   return (
     <div className="App">
+      <a href="#main-content" className="skip-nav">Saltar al contenido</a>
       <Header />
-      <main>
+      <main id="main-content">
         <Outlet />
       </main>
       <Footer />

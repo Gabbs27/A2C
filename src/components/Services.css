@@ -7,7 +7,7 @@
 .services-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 3rem;
+  gap: var(--space-xl);
 }
 
 .service-card {
@@ -35,23 +35,23 @@
 }
 
 .service-title {
-  font-size: 1.5rem;
+  font-size: var(--text-2xl);
   font-weight: 600;
   margin-bottom: var(--space-md);
   color: var(--text-on-dark);
 }
 
 .service-description {
-  font-size: 1.05rem;
+  font-size: var(--text-base);
   line-height: 1.8;
   color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-lg);
   min-height: 120px;
 }
 
 .service-btn {
   display: inline-block;
-  padding: 1rem 2rem;
+  padding: var(--space-sm) var(--space-lg);
   background: var(--accent-blue);
   color: var(--text-on-dark);
   font-weight: 600;
@@ -59,7 +59,7 @@
   transition: var(--transition-base);
   text-transform: uppercase;
   letter-spacing: 0.025em;
-  font-size: 0.95rem;
+  font-size: var(--text-sm);
 }
 
 .service-btn:hover {
@@ -68,24 +68,21 @@
   box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
 }
 
-@media (max-width: 968px) {
+@media (max-width: 1024px) {
   .services {
-    padding: 4rem 0;
+    padding: var(--space-2xl) 0;
   }
 
   .services-grid {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: var(--space-lg);
   }
 
   .service-card {
-    padding: 2.5rem 1.5rem;
+    padding: var(--space-lg) var(--space-md);
   }
 
   .service-description {
     min-height: auto;
   }
 }
-
-
-

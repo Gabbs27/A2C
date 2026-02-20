@@ -46,7 +46,7 @@ const Header = () => {
               </Link>
             </div>
 
-            <nav className={`nav ${isMobileMenuOpen ? 'active' : ''}`}>
+            <nav className={`nav ${isMobileMenuOpen ? 'active' : ''}`} aria-label="Navegación principal">
               <Link to="/inventario" onClick={() => setIsMobileMenuOpen(false)}>Comprar</Link>
               <Link to="/inventario" onClick={() => setIsMobileMenuOpen(false)}>Vehiculos</Link>
               <a href="https://wa.me/18294470259?text=Hola, me interesa vender mi vehiculo" onClick={() => setIsMobileMenuOpen(false)}>Vender</a>
@@ -56,7 +56,12 @@ const Header = () => {
               <a href="#contact" onClick={() => setIsMobileMenuOpen(false)}>Contacto</a>
             </nav>
 
-            <button className="mobile-menu-btn" onClick={toggleMobileMenu}>
+            <button
+              className="mobile-menu-btn"
+              onClick={toggleMobileMenu}
+              aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+              aria-expanded={isMobileMenuOpen}
+            >
               {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
             </button>
           </div>

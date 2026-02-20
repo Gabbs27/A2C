@@ -38,9 +38,9 @@
 }
 
 /* Tablet */
-@media (max-width: 968px) {
+@media (max-width: 1024px) {
   .featured-vehicles {
-    padding: 5rem 0;
+    padding: var(--space-2xl) 0;
   }
 
   .featured-vehicles__grid {
@@ -50,9 +50,9 @@
 }
 
 /* Mobile */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .featured-vehicles {
-    padding: 4rem 0;
+    padding: var(--space-2xl) 0;
   }
 
   .featured-vehicles__grid {

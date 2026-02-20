@@ -5,7 +5,7 @@
 }
 
 :root {
-  /* Colores Principales - Plata Metálico */
+  /* Colores Principales - Plata Metalico */
   --primary: #C0C0C0;
   --primary-light: #D8D8D8;
   --primary-dark: #A8A8A8;
@@ -31,21 +31,53 @@
   --accent-gold-hover: #C19B2B;
   --accent-gold-light: #E5C158;
 
+  /* Colores Semanticos */
+  --color-success: #16a34a;
+  --color-success-light: rgba(22, 163, 74, 0.15);
+  --color-success-border: rgba(22, 163, 74, 0.3);
+  --color-error: #dc2626;
+  --color-error-light: rgba(220, 38, 38, 0.15);
+  --color-error-border: rgba(220, 38, 38, 0.3);
+  --color-warning: #f59e0b;
+  --color-warning-light: rgba(245, 158, 11, 0.15);
+  --color-warning-border: rgba(245, 158, 11, 0.3);
+  --color-whatsapp: #25D366;
+  --color-whatsapp-hover: #20bd5a;
+  --color-focus: rgba(59, 130, 246, 0.15);
+
   /* Colores de Texto */
   --text-primary: #1A1A1A;
   --text-secondary: #6B7280;
   --text-tertiary: #9CA3AF;
   --text-on-dark: #FFFFFF;
   --text-on-primary: #1A1A1A;
+  --text-muted: rgba(255, 255, 255, 0.7);
+  --text-muted-light: rgba(255, 255, 255, 0.6);
+
+  /* Escala Tipografica */
+  --text-xs: 0.75rem;    /* 12px */
+  --text-sm: 0.875rem;   /* 14px */
+  --text-base: 1rem;     /* 16px */
+  --text-lg: 1.125rem;   /* 18px */
+  --text-xl: 1.25rem;    /* 20px */
+  --text-2xl: 1.5rem;    /* 24px */
+  --text-3xl: 2rem;      /* 32px */
+  --text-4xl: 2.5rem;    /* 40px */
+  --text-5xl: 3.5rem;    /* 56px */
 
   /* Espaciado (8px base) */
-  --space-xs: 0.5rem;
-  --space-sm: 1rem;
-  --space-md: 1.5rem;
-  --space-lg: 2rem;
-  --space-xl: 3rem;
-  --space-2xl: 4rem;
-  --space-3xl: 6rem;
+  --space-2xs: 0.25rem;  /* 4px */
+  --space-xs: 0.5rem;    /* 8px */
+  --space-sm: 1rem;      /* 16px */
+  --space-md: 1.5rem;    /* 24px */
+  --space-lg: 2rem;      /* 32px */
+  --space-xl: 3rem;      /* 48px */
+  --space-2xl: 4rem;     /* 64px */
+  --space-3xl: 6rem;     /* 96px */
+
+  /* Header Height */
+  --header-height: 120px;
+  --header-height-mobile: 80px;
 
   /* Border Radius */
   --radius-sm: 0.25rem;
@@ -101,15 +133,120 @@ img {
   }
 }
 
-/* Estilos globales para efectos metálicos */
+/* Skip Navigation */
+.skip-nav {
+  position: absolute;
+  top: -100%;
+  left: var(--space-sm);
+  z-index: 10000;
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--accent-blue);
+  color: var(--text-on-dark);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  transition: top var(--transition-fast);
+}
+
+.skip-nav:focus {
+  top: var(--space-sm);
+}
+
+/* Global Spinner */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--background-gray-dark);
+  border-top-color: var(--primary-dark);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.spinner--dark {
+  border-color: rgba(192, 192, 192, 0.2);
+  border-top-color: var(--primary);
+}
+
+/* Section Titles */
+.section-title {
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-lg);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.section-title--center {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+  position: relative;
+}
+
+.section-title--center::after {
+  content: '';
+  display: block;
+  width: 100px;
+  height: 4px;
+  background: var(--primary);
+  margin: var(--space-md) auto 0;
+  border-radius: var(--radius-sm);
+}
+
+.tagline {
+  font-size: var(--text-sm);
+  font-weight: 900;
+  color: var(--primary);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-sm);
+  display: inline-block;
+  padding: var(--space-xs) var(--space-md);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-full);
+}
+
+/* Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Estilos globales para efectos metalicos */
 .metallic-text {
-  background: linear-gradient(135deg, #FFFFFF 0%, #C0C0C0 50%, #A8A8A8 100%);
+  background: linear-gradient(135deg, #FFFFFF 0%, var(--primary) 50%, var(--primary-dark) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .metallic-gradient {
-  background: linear-gradient(135deg, #E8E8E8 0%, #C0C0C0 50%, #A8A8A8 100%);
+  background: linear-gradient(135deg, var(--background-gray-dark) 0%, var(--primary) 50%, var(--primary-dark) 100%);
 }
 
+/* Responsive Typography */
+@media (max-width: 1024px) {
+  :root {
+    --text-4xl: 2.25rem;
+    --text-5xl: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --text-3xl: 1.5rem;
+    --text-4xl: 1.75rem;
+    --text-5xl: 2rem;
+  }
+}
