@@ -29,7 +29,6 @@ const VehicleCard = ({ vehicle, exchangeRate, onCompareToggle, isComparing }) =>
     : null
 
   const handleCompareClick = (e) => {
-    e.preventDefault()
     e.stopPropagation()
     if (onCompareToggle) {
       onCompareToggle(vehicle.id)
@@ -37,79 +36,81 @@ const VehicleCard = ({ vehicle, exchangeRate, onCompareToggle, isComparing }) =>
   }
 
   return (
-    <Link to={`/vehiculo/${vehicle.id}`} className="vehicle-card">
-      <div className="vehicle-card__image-wrapper">
-        {primaryImage ? (
-          <img
-            src={primaryImage.image_url}
-            alt={`${vehicle.brand} ${vehicle.model} ${vehicle.year}`}
-            className="vehicle-card__image"
-            loading="lazy"
-          />
-        ) : (
-          <div className="vehicle-card__image-placeholder">
-            <span>Sin imagen</span>
+    <div className="vehicle-card">
+      <Link to={`/vehiculo/${vehicle.id}`} className="vehicle-card__link">
+        <div className="vehicle-card__image-wrapper">
+          {primaryImage ? (
+            <img
+              src={primaryImage.image_url}
+              alt={`${vehicle.brand} ${vehicle.model} ${vehicle.year}`}
+              className="vehicle-card__image"
+              loading="lazy"
+            />
+          ) : (
+            <div className="vehicle-card__image-placeholder">
+              <span>Sin imagen</span>
+            </div>
+          )}
+
+          {vehicle.status && (
+            <span className={`vehicle-card__status vehicle-card__status--${vehicle.status}`}>
+              {statusLabels[vehicle.status] || vehicle.status}
+            </span>
+          )}
+        </div>
+
+        <div className="vehicle-card__body">
+          <div className="vehicle-card__header">
+            <h3 className="vehicle-card__title">
+              {vehicle.brand} {vehicle.model}
+            </h3>
+            <span className="vehicle-card__year">{vehicle.year}</span>
           </div>
-        )}
 
-        {vehicle.status && (
-          <span className={`vehicle-card__status vehicle-card__status--${vehicle.status}`}>
-            {statusLabels[vehicle.status] || vehicle.status}
-          </span>
-        )}
-      </div>
-
-      <div className="vehicle-card__body">
-        <div className="vehicle-card__header">
-          <h3 className="vehicle-card__title">
-            {vehicle.brand} {vehicle.model}
-          </h3>
-          <span className="vehicle-card__year">{vehicle.year}</span>
-        </div>
-
-        <div className="vehicle-card__pricing">
-          <span className="vehicle-card__price-usd">${priceUSD}</span>
-          {priceDOP && (
-            <span className="vehicle-card__price-dop">RD$ {priceDOP}</span>
-          )}
-        </div>
-
-        <div className="vehicle-card__badges">
-          {mileageFormatted && (
-            <span className="vehicle-card__badge">
-              <FiActivity size={13} />
-              {mileageFormatted}
-            </span>
-          )}
-          {vehicle.fuel_type && (
-            <span className="vehicle-card__badge">
-              <FiDroplet size={13} />
-              {vehicle.fuel_type}
-            </span>
-          )}
-          {vehicle.transmission && (
-            <span className="vehicle-card__badge">
-              <FiSettings size={13} />
-              {vehicle.transmission}
-            </span>
-          )}
-        </div>
-
-        {onCompareToggle && (
-          <div className="vehicle-card__compare" onClick={handleCompareClick}>
-            <label className="vehicle-card__compare-label">
-              <input
-                type="checkbox"
-                checked={isComparing || false}
-                onChange={() => {}}
-                className="vehicle-card__compare-checkbox"
-              />
-              <span>Comparar</span>
-            </label>
+          <div className="vehicle-card__pricing">
+            <span className="vehicle-card__price-usd">${priceUSD}</span>
+            {priceDOP && (
+              <span className="vehicle-card__price-dop">RD$ {priceDOP}</span>
+            )}
           </div>
-        )}
-      </div>
-    </Link>
+
+          <div className="vehicle-card__badges">
+            {mileageFormatted && (
+              <span className="vehicle-card__badge">
+                <FiActivity size={13} />
+                {mileageFormatted}
+              </span>
+            )}
+            {vehicle.fuel_type && (
+              <span className="vehicle-card__badge">
+                <FiDroplet size={13} />
+                {vehicle.fuel_type}
+              </span>
+            )}
+            {vehicle.transmission && (
+              <span className="vehicle-card__badge">
+                <FiSettings size={13} />
+                {vehicle.transmission}
+              </span>
+            )}
+          </div>
+        </div>
+      </Link>
+
+      {onCompareToggle && (
+        <div className="vehicle-card__compare">
+          <label className="vehicle-card__compare-label">
+            <input
+              type="checkbox"
+              checked={isComparing || false}
+              onChange={handleCompareClick}
+              className="vehicle-card__compare-checkbox"
+            />
+            <span>Comparar</span>
+          </label>
+        </div>
+      )}
+    </div>
   )
 }
 

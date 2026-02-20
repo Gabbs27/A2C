@@ -10,7 +10,7 @@
 .footer-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 3rem;
+  gap: var(--space-xl);
 }
 
 .footer-section {
@@ -19,7 +19,7 @@
 }
 
 .footer-logo {
-  font-size: 1.8rem;
+  font-size: var(--text-3xl);
   font-weight: 900;
   margin-bottom: var(--space-sm);
   letter-spacing: 0.05em;
@@ -32,14 +32,14 @@
 }
 
 .footer-description {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-muted);
   line-height: 1.6;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-md);
 }
 
 .social-links {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-sm);
 }
 
 .social-link {
@@ -60,7 +60,7 @@
 }
 
 .footer-title {
-  font-size: 1.25rem;
+  font-size: var(--text-xl);
   font-weight: 600;
   margin-bottom: var(--space-md);
   color: var(--primary-light);
@@ -70,11 +70,11 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: var(--space-xs);
 }
 
 .footer-links a {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--text-muted);
   transition: var(--transition-base);
   display: inline-block;
 }
@@ -87,20 +87,20 @@
 .contact-info-footer {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: var(--space-sm);
 }
 
 .contact-item {
   display: flex;
-  gap: 1rem;
-  color: rgba(255, 255, 255, 0.7);
+  gap: var(--space-sm);
+  color: var(--text-muted);
   align-items: flex-start;
 }
 
 .contact-item svg {
   color: var(--primary);
   flex-shrink: 0;
-  margin-top: 0.2rem;
+  margin-top: var(--space-2xs);
 }
 
 .contact-item p {
@@ -112,14 +112,14 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: var(--space-xs);
 }
 
 .hours-list li {
   display: flex;
   justify-content: space-between;
-  color: rgba(255, 255, 255, 0.7);
-  padding: 0.5rem 0;
+  color: var(--text-muted);
+  padding: var(--space-xs) 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -130,7 +130,7 @@
 
 .footer-bottom {
   background: rgba(0, 0, 0, 0.3);
-  padding: 1.5rem 0;
+  padding: var(--space-md) 0;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -139,37 +139,37 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: var(--space-sm);
 }
 
 .footer-bottom-content p {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-muted-light);
   margin: 0;
 }
 
 .footer-bottom-links {
   display: flex;
-  gap: 2rem;
+  gap: var(--space-lg);
 }
 
 .footer-bottom-links a {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--text-muted-light);
   transition: var(--transition-base);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 .footer-bottom-links a:hover {
   color: var(--primary);
 }
 
-@media (max-width: 968px) {
+@media (max-width: 1024px) {
   .footer-main {
-    padding: 4rem 0 2rem;
+    padding: var(--space-2xl) 0 var(--space-lg);
   }
 
   .footer-grid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
+    gap: var(--space-lg);
   }
 
   .footer-bottom-content {
@@ -179,20 +179,17 @@
 
   .footer-bottom-links {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: var(--space-xs);
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .footer-grid {
     grid-template-columns: 1fr;
   }
 
   .hours-list li {
     flex-direction: column;
-    gap: 0.3rem;
+    gap: var(--space-2xs);
   }
 }
-
-
-

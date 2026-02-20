@@ -75,7 +75,12 @@ const Hero = () => {
   const slide = slides[currentSlide]
 
   return (
-    <section className="hero">
+    <section
+      className="hero"
+      role="region"
+      aria-roledescription="carrusel"
+      aria-label="Vehículos destacados"
+    >
       {/* Background slides - only images */}
       <div className="hero-slider">
         {slides.map((s, index) => (
@@ -112,6 +117,7 @@ const Hero = () => {
                 className="hero-search__select"
                 value={selectedBrand}
                 onChange={(e) => setSelectedBrand(e.target.value)}
+                aria-label="Buscar por marca"
               >
                 <option value="">Todas las Marcas</option>
                 {BRANDS.map(brand => (

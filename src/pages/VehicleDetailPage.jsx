@@ -213,7 +213,7 @@ const VehicleDetailPage = () => {
       <div className="detail-page">
         <div className="container">
           <div className="detail-loading">
-            <div className="detail-loading__spinner" />
+            <div className="spinner" />
             <p>Cargando...</p>
           </div>
         </div>

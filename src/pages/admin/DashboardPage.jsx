@@ -196,7 +196,7 @@ const DashboardPage = () => {
     return (
       <div className="dashboard-page">
         <div className="dashboard-loading">
-          <div className="spinner" />
+          <div className="spinner spinner--dark" />
           <p>Cargando panel...</p>
         </div>
       </div>

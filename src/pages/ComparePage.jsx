@@ -158,7 +158,7 @@ const ComparePage = () => {
       <div className="compare-page">
         <div className="container">
           <div className="compare-loading">
-            <div className="compare-loading__spinner" />
+            <div className="spinner" />
             <p>Cargando comparaci&oacute;n...</p>
           </div>
         </div>

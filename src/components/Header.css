@@ -17,8 +17,8 @@
 .header-top {
   background: var(--background-dark);
   color: var(--text-on-dark);
-  padding: 0.5rem 0;
-  font-size: 0.9rem;
+  padding: var(--space-xs) 0;
+  font-size: var(--text-sm);
 }
 
 .header-top-content {
@@ -29,13 +29,13 @@
 
 .contact-info {
   display: flex;
-  gap: 2rem;
+  gap: var(--space-lg);
 }
 
 .phone-link {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-xs);
   transition: var(--transition-base);
 }
 
@@ -51,7 +51,7 @@
 .header-main {
   background: rgba(26, 26, 26, 0.95);
   backdrop-filter: blur(10px);
-  padding: 1.25rem 0;
+  padding: var(--space-sm) 0;
 }
 
 .header-content {
@@ -61,7 +61,7 @@
 }
 
 .logo h1 {
-  font-size: 2rem;
+  font-size: var(--text-3xl);
   font-weight: 900;
   color: var(--text-on-dark);
   letter-spacing: 0.05em;
@@ -71,13 +71,13 @@
 .logo h1 span {
   color: var(--primary);
   font-weight: 300;
-  margin-left: 0.5rem;
+  margin-left: var(--space-xs);
   letter-spacing: 0.1em;
 }
 
 .nav {
   display: flex;
-  gap: 2rem;
+  gap: var(--space-lg);
   align-items: center;
 }
 
@@ -85,7 +85,7 @@
   color: var(--text-on-dark);
   font-weight: 500;
   position: relative;
-  padding: 0.5rem 0;
+  padding: var(--space-xs) 0;
   transition: var(--transition-base);
 }
 
@@ -112,7 +112,7 @@
   display: none;
   background: transparent;
   color: var(--text-on-dark);
-  padding: 0.5rem;
+  padding: var(--space-xs);
   transition: var(--transition-base);
 }
 
@@ -120,7 +120,7 @@
   color: var(--primary);
 }
 
-@media (max-width: 968px) {
+@media (max-width: 1024px) {
   .header-top {
     display: none;
   }
@@ -143,9 +143,9 @@
     background: var(--secondary);
     flex-direction: column;
     justify-content: center;
-    gap: 1.5rem;
+    gap: var(--space-md);
     transition: right 0.3s ease-in-out;
-    padding: 2rem;
+    padding: var(--space-lg);
     z-index: 1001;
     overflow-y: auto;
   }
@@ -156,10 +156,10 @@
   }
 
   .nav a {
-    font-size: 1.1rem;
+    font-size: var(--text-lg);
     width: 100%;
     text-align: center;
-    padding: 12px 0;
+    padding: var(--space-sm) 0;
     min-height: 44px;
     display: flex;
     align-items: center;
@@ -167,25 +167,22 @@
   }
 
   .logo h1 {
-    font-size: 1.5rem;
+    font-size: var(--text-2xl);
   }
 
   .header-main {
-    padding: 0.75rem 0;
+    padding: var(--space-xs) 0;
   }
 }
 
 @media (max-width: 480px) {
   .logo h1 {
-    font-size: 1.2rem;
+    font-size: var(--text-xl);
   }
 
   .logo h1 span {
     display: block;
     margin-left: 0;
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
   }
 }
-
-
-

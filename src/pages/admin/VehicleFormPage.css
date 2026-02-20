@@ -1,7 +1,7 @@
 .vehicle-form-page {
   min-height: 100vh;
   background: var(--background-dark);
-  padding: 120px var(--space-lg) var(--space-2xl);
+  padding: var(--header-height) var(--space-lg) var(--space-2xl);
 }
 
 /* Header */
@@ -13,7 +13,7 @@
 }
 
 .vehicle-form-header h1 {
-  font-size: 1.8rem;
+  font-size: var(--text-3xl);
   font-weight: 700;
   color: var(--primary);
   letter-spacing: 1px;
@@ -23,9 +23,9 @@
   background: transparent;
   border: 1px solid var(--primary-dark);
   color: var(--primary);
-  padding: 10px 20px;
+  padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-md);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-base);
@@ -57,7 +57,7 @@
 
 .form-section h2 {
   color: var(--primary-light);
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   font-weight: 600;
   letter-spacing: 0.5px;
   margin-bottom: var(--space-md);
@@ -92,13 +92,13 @@
 
 .vehicle-form .form-group label {
   color: var(--primary-light);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   letter-spacing: 0.5px;
 }
 
 .vehicle-form .form-group label .required {
-  color: #ef4444;
+  color: var(--color-error);
   margin-left: 2px;
 }
 
@@ -108,9 +108,9 @@
   background: var(--secondary-dark);
   border: 1px solid var(--primary-dark);
   border-radius: var(--radius-md);
-  padding: 12px 16px;
+  padding: var(--space-sm);
   color: var(--text-on-dark);
-  font-size: 0.95rem;
+  font-size: var(--text-sm);
   font-family: inherit;
   transition: border-color var(--transition-base);
   outline: none;
@@ -165,7 +165,7 @@
 
 .checkbox-group label {
   color: var(--primary-light);
-  font-size: 0.95rem;
+  font-size: var(--text-sm);
   cursor: pointer;
 }
 
@@ -181,18 +181,18 @@
 
 .features-add-btn {
   background: var(--accent-blue);
-  color: white;
+  color: var(--text-on-dark);
   border: none;
   border-radius: var(--radius-md);
-  padding: 12px 18px;
-  font-size: 0.85rem;
+  padding: var(--space-sm);
+  font-size: var(--text-sm);
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-base);
   white-space: nowrap;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--space-2xs);
 }
 
 .features-add-btn:hover {
@@ -211,11 +211,11 @@
   color: var(--accent-blue-light);
   border: 1px solid rgba(59, 130, 246, 0.3);
   border-radius: var(--radius-full);
-  padding: 4px 12px;
-  font-size: 0.8rem;
+  padding: var(--space-2xs) var(--space-sm);
+  font-size: var(--text-sm);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-xs);
 }
 
 .feature-tag button {
@@ -223,7 +223,7 @@
   border: none;
   color: var(--accent-blue-light);
   cursor: pointer;
-  font-size: 1rem;
+  font-size: var(--text-base);
   padding: 0;
   line-height: 1;
   display: flex;
@@ -232,7 +232,7 @@
 }
 
 .feature-tag button:hover {
-  color: #ef4444;
+  color: var(--color-error);
 }
 
 .common-features {
@@ -241,14 +241,14 @@
 
 .common-features-label {
   color: var(--text-tertiary);
-  font-size: 0.75rem;
-  margin-bottom: 4px;
+  font-size: var(--text-xs);
+  margin-bottom: var(--space-2xs);
 }
 
 .common-features-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: var(--space-2xs);
 }
 
 .common-feature-btn {
@@ -256,8 +256,8 @@
   border: 1px solid rgba(168, 168, 168, 0.2);
   color: var(--text-tertiary);
   border-radius: var(--radius-full);
-  padding: 2px 10px;
-  font-size: 0.72rem;
+  padding: var(--space-2xs) var(--space-xs);
+  font-size: var(--text-xs);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
@@ -296,13 +296,13 @@
 
 .image-upload-icon {
   color: var(--primary-dark);
-  font-size: 2rem;
+  font-size: var(--text-3xl);
   margin-bottom: var(--space-xs);
 }
 
 .image-upload-text {
   color: var(--text-tertiary);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
 }
 
 .image-upload-text span {
@@ -322,9 +322,9 @@
 .image-url-label {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-xs);
   color: var(--primary-light);
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   font-weight: 500;
   margin-bottom: var(--space-xs);
 }
@@ -339,9 +339,9 @@
   background: var(--secondary-dark);
   border: 1px solid var(--primary-dark);
   border-radius: var(--radius-md);
-  padding: 10px 14px;
+  padding: var(--space-xs) var(--space-sm);
   color: var(--text-on-dark);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   font-family: inherit;
   outline: none;
   transition: border-color var(--transition-base);
@@ -358,18 +358,18 @@
 
 .image-url-btn {
   background: var(--accent-blue);
-  color: white;
+  color: var(--text-on-dark);
   border: none;
   border-radius: var(--radius-md);
-  padding: 10px 18px;
-  font-size: 0.85rem;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--text-sm);
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-base);
   white-space: nowrap;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-xs);
   min-height: 44px;
 }
 
@@ -384,8 +384,8 @@
 
 .image-url-error {
   margin-top: var(--space-xs);
-  color: #ef4444;
-  font-size: 0.8rem;
+  color: var(--color-error);
+  font-size: var(--text-sm);
 }
 
 .spin-icon {
@@ -427,16 +427,16 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 6px;
+  padding: var(--space-xs);
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), transparent);
 }
 
 .image-primary-radio {
   display: flex;
   align-items: center;
-  gap: 4px;
-  color: white;
-  font-size: 0.65rem;
+  gap: var(--space-2xs);
+  color: var(--text-on-dark);
+  font-size: var(--text-xs);
   font-weight: 500;
 }
 
@@ -449,12 +449,12 @@
 
 .image-remove-btn {
   background: rgba(239, 68, 68, 0.85);
-  color: white;
+  color: var(--text-on-dark);
   border: none;
   border-radius: 50%;
   width: 22px;
   height: 22px;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -465,7 +465,7 @@
 }
 
 .image-remove-btn:hover {
-  background: #ef4444;
+  background: var(--color-error);
 }
 
 .primary-label {
@@ -476,9 +476,9 @@
   background: rgba(212, 175, 55, 0.85);
   color: var(--secondary-dark);
   text-align: center;
-  font-size: 0.65rem;
+  font-size: var(--text-xs);
   font-weight: 700;
-  padding: 2px;
+  padding: var(--space-2xs);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -495,8 +495,8 @@
   color: var(--secondary-dark);
   border: none;
   border-radius: var(--radius-md);
-  padding: 14px 36px;
-  font-size: 1rem;
+  padding: var(--space-sm) var(--space-lg);
+  font-size: var(--text-base);
   font-weight: 600;
   letter-spacing: 1px;
   cursor: pointer;
@@ -523,9 +523,9 @@
   background: transparent;
   border: 1px solid var(--primary-dark);
   color: var(--primary);
-  padding: 14px 28px;
+  padding: var(--space-sm) var(--space-lg);
   border-radius: var(--radius-md);
-  font-size: 1rem;
+  font-size: var(--text-base);
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-base);
@@ -541,12 +541,12 @@
 
 /* Form Error */
 .form-error {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: var(--color-error-light);
+  border: 1px solid var(--color-error-border);
   border-radius: var(--radius-md);
-  padding: 12px 16px;
-  color: #ef4444;
-  font-size: 0.9rem;
+  padding: var(--space-sm);
+  color: var(--color-error);
+  font-size: var(--text-sm);
 }
 
 /* Form Loading */
@@ -560,19 +560,10 @@
   gap: var(--space-sm);
 }
 
-.form-loading .spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(192, 192, 192, 0.2);
-  border-top-color: var(--primary);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
   .vehicle-form-page {
-    padding: 80px var(--space-sm) var(--space-xl);
+    padding: var(--header-height-mobile) var(--space-sm) var(--space-xl);
   }
 
   .vehicle-form-header {
@@ -582,7 +573,7 @@
   }
 
   .vehicle-form-header h1 {
-    font-size: 1.4rem;
+    font-size: var(--text-2xl);
   }
 
   .back-btn {
@@ -602,7 +593,7 @@
   .vehicle-form .form-group select,
   .vehicle-form .form-group textarea {
     min-height: 44px;
-    font-size: 1rem;
+    font-size: var(--text-base);
   }
 
   .features-add-btn {
@@ -610,8 +601,8 @@
   }
 
   .common-feature-btn {
-    padding: 6px 12px;
-    font-size: 0.8rem;
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--text-sm);
     min-height: 36px;
   }
 
