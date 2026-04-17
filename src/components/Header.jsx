@@ -1,71 +1,128 @@
-import React, { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { FiMenu, FiX, FiPhone } from 'react-icons/fi'
+import { FiMenu, FiX } from 'react-icons/fi'
 import './Header.css'
+
+const NAV_ITEMS = [
+  { label: 'Comprar', to: '/inventario', type: 'link' },
+  {
+    label: 'Vender',
+    href: 'https://wa.me/18294470259?text=Hola%2C%20me%20interesa%20vender%20mi%20veh%C3%ADculo',
+    type: 'external',
+  },
+  { label: 'Financiamiento', href: '#finance', type: 'anchor' },
+  { label: 'Servicio', href: '#service', type: 'anchor' },
+  { label: 'Contacto', href: '#contact', type: 'anchor' },
+]
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const location = useLocation()
 
+  // Track scroll >32px for header style change
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50)
+      setIsScrolled(window.scrollY > 32)
     }
-    window.addEventListener('scroll', handleScroll)
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen)
+  // Lock body scroll while drawer is open
+  useEffect(() => {
+    if (isDrawerOpen) {
+      const prev = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+      return () => {
+        document.body.style.overflow = prev
+      }
+    }
+  }, [isDrawerOpen])
+
+  // Close drawer on navigation
+  useEffect(() => {
+    setIsDrawerOpen(false)
+  }, [location.pathname, location.hash])
+
+  const closeDrawer = () => setIsDrawerOpen(false)
+
+  const renderNavLink = (item, inDrawer = false) => {
+    const className = inDrawer ? 'site-header__drawer-link' : 'site-header__nav-link'
+
+    if (item.type === 'link') {
+      return (
+        <Link key={item.label} to={item.to} className={className} onClick={closeDrawer}>
+          <span>{item.label}</span>
+        </Link>
+      )
+    }
+
+    const extraProps =
+      item.type === 'external'
+        ? { target: '_blank', rel: 'noopener noreferrer' }
+        : {}
+
+    return (
+      <a
+        key={item.label}
+        href={item.href}
+        className={className}
+        onClick={closeDrawer}
+        {...extraProps}
+      >
+        <span>{item.label}</span>
+      </a>
+    )
   }
 
   return (
-    <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
-      <div className="header-top">
-        <div className="container">
-          <div className="header-top-content">
-            <div className="contact-info">
-              <a href="tel:+18294470259" className="phone-link">
-                <FiPhone /> Ventas — +1 (829) 447-0259
-              </a>
-            </div>
-            <div className="address">
-              Avenida 6, Santo Domingo, RD
-            </div>
-          </div>
-        </div>
+    <header
+      className={`site-header ${isScrolled ? 'is-scrolled' : ''} ${
+        isDrawerOpen ? 'is-drawer-open' : ''
+      }`}
+    >
+      <div className="site-header__inner">
+        <button
+          type="button"
+          className="site-header__hamburger"
+          aria-label={isDrawerOpen ? 'Cerrar menú' : 'Abrir menú'}
+          aria-expanded={isDrawerOpen}
+          aria-controls="primary-nav"
+          onClick={() => setIsDrawerOpen((v) => !v)}
+        >
+          {isDrawerOpen ? <FiX size={22} aria-hidden="true" /> : <FiMenu size={22} aria-hidden="true" />}
+        </button>
+
+        <Link to="/" className="site-header__logo" onClick={closeDrawer}>
+          <img
+            src="/logo-dark.png"
+            alt=""
+            width="160"
+            height="48"
+            className="site-header__logo-img"
+          />
+          <span className="sr-only">A2C Internacional</span>
+        </Link>
+
+        <nav
+          id="primary-nav"
+          className="site-header__nav"
+          aria-label="Navegación principal"
+        >
+          {NAV_ITEMS.map((item) => renderNavLink(item, false))}
+        </nav>
       </div>
 
-      <div className="header-main">
-        <div className="container">
-          <div className="header-content">
-            <div className="logo">
-              <Link to="/">
-                <h1>A2C <span>INTERNATIONAL</span></h1>
-              </Link>
-            </div>
-
-            <nav className={`nav ${isMobileMenuOpen ? 'active' : ''}`} aria-label="Navegación principal">
-              <Link to="/inventario" onClick={() => setIsMobileMenuOpen(false)}>Comprar</Link>
-              <Link to="/inventario" onClick={() => setIsMobileMenuOpen(false)}>Vehiculos</Link>
-              <a href="https://wa.me/18294470259?text=Hola, me interesa vender mi vehiculo" onClick={() => setIsMobileMenuOpen(false)}>Vender</a>
-              <a href="#finance" onClick={() => setIsMobileMenuOpen(false)}>Financiamiento</a>
-              <a href="#service" onClick={() => setIsMobileMenuOpen(false)}>Servicio</a>
-              <a href="#about" onClick={() => setIsMobileMenuOpen(false)}>Acerca de</a>
-              <a href="#contact" onClick={() => setIsMobileMenuOpen(false)}>Contacto</a>
-            </nav>
-
-            <button
-              className="mobile-menu-btn"
-              onClick={toggleMobileMenu}
-              aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
-              aria-expanded={isMobileMenuOpen}
-            >
-              {isMobileMenuOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-            </button>
-          </div>
-        </div>
+      <div
+        className="site-header__drawer"
+        data-open={isDrawerOpen}
+        aria-hidden={!isDrawerOpen}
+      >
+        <nav className="site-header__drawer-nav" aria-label="Navegación móvil">
+          {NAV_ITEMS.map((item) => renderNavLink(item, true))}
+        </nav>
       </div>
     </header>
   )
