@@ -1,38 +1,58 @@
-.whatsapp-button {
+.wa-btn {
   position: fixed;
-  bottom: var(--space-md);
-  right: var(--space-md);
+  bottom: var(--space-6);
+  right: var(--space-6);
   width: 56px;
   height: 56px;
-  background: var(--color-whatsapp);
-  color: var(--text-on-dark);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  cursor: pointer;
-  text-decoration: none;
-  transition: transform var(--transition-base), box-shadow var(--transition-base);
-  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
-  animation: whatsapp-pulse 2s infinite;
+  display: grid;
+  place-items: center;
+  background: var(--whatsapp);
+  color: #ffffff;
+  font-size: 28px;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-md);
+  z-index: 900;
+  transition:
+    transform var(--duration-fast) var(--ease-out-quart),
+    box-shadow var(--duration-fast) var(--ease-out-quart),
+    opacity var(--duration-base) var(--ease-out-quart);
+}
+.wa-btn:hover,
+.wa-btn:focus-visible {
+  transform: scale(1.08);
+  box-shadow: var(--shadow-lg), 0 0 24px rgba(37, 211, 102, 0.3);
 }
 
-.whatsapp-button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
+/* Collapse state on scroll-down (reserved for future label expansion) */
+.wa-btn.is-collapsed {
+  opacity: 0.85;
 }
 
-@keyframes whatsapp-pulse {
-  0% {
-    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+/* Single attention pulse */
+@keyframes waPulse {
+  0% { transform: scale(1); box-shadow: var(--shadow-md), 0 0 0 0 rgba(37, 211, 102, 0.5); }
+  50% { transform: scale(1.08); box-shadow: var(--shadow-md), 0 0 0 14px rgba(37, 211, 102, 0); }
+  100% { transform: scale(1); box-shadow: var(--shadow-md), 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+.wa-btn.is-attention {
+  animation: waPulse 1500ms var(--ease-out-quart) 1;
+}
+
+@media (max-width: 640px) {
+  .wa-btn {
+    bottom: var(--space-4);
+    right: var(--space-4);
+    width: 52px;
+    height: 52px;
+    font-size: 26px;
   }
-  50% {
-    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4),
-                0 0 0 10px rgba(37, 211, 102, 0.1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wa-btn {
+    transition: none;
   }
-  100% {
-    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4),
-                0 0 0 20px rgba(37, 211, 102, 0);
+  .wa-btn.is-attention {
+    animation: none;
   }
 }
