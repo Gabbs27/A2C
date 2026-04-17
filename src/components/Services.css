@@ -1,88 +1,98 @@
 .services {
-  padding: var(--space-3xl) 0;
-  background: var(--secondary);
-  color: var(--text-on-dark);
+  padding-block: var(--section-padding-y);
+  background: var(--ink-900);
+  border-block: 1px solid var(--ink-800);
 }
 
-.services-grid {
+.services__header {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: var(--space-xl);
+  grid-template-columns: auto 1fr;
+  gap: var(--space-6);
+  align-items: start;
+  margin-bottom: var(--space-12);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--ink-800);
+}
+.services__number {
+  font-family: var(--font-display);
+  font-size: var(--text-display-lg);
+  color: var(--gold-500);
+  line-height: 1;
+  font-variation-settings: 'opsz' 96, 'SOFT' 0;
+}
+.services__title {
+  color: var(--silver-100);
+  font-weight: 500;
+  font-variation-settings: 'opsz' 96, 'SOFT' 30;
+  margin-top: var(--space-2);
 }
 
-.service-card {
-  background: rgba(255, 255, 255, 0.05);
-  padding: var(--space-xl) var(--space-lg);
-  border-radius: var(--radius-lg);
-  text-align: center;
-  transition: var(--transition-base);
-  border: 1px solid rgba(192, 192, 192, 0.2);
+.services__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.services__item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--space-8);
+  align-items: start;
+  padding-block: var(--space-8);
+  border-bottom: 1px solid var(--ink-800);
+}
+.services__item:last-child {
+  border-bottom: none;
 }
 
-.service-card:hover {
-  transform: translateY(-10px);
-  background: rgba(255, 255, 255, 0.08);
-  border-color: var(--primary);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 5px 10px rgba(0, 0, 0, 0.05);
+.services__item-number {
+  font-family: var(--font-display);
+  font-size: var(--text-h1);
+  font-weight: 400;
+  color: var(--silver-700);
+  line-height: 1;
+  font-variation-settings: 'opsz' 48, 'SOFT' 0;
 }
 
-.service-icon {
-  color: var(--primary);
-  margin-bottom: var(--space-lg);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.services__item-title {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  font-weight: 500;
+  color: var(--silver-100);
+  margin-bottom: var(--space-3);
+  font-variation-settings: 'opsz' 48, 'SOFT' 20;
+  line-height: var(--leading-snug);
+}
+.services__item-body p {
+  color: var(--silver-300);
+  max-width: 60ch;
+  font-size: var(--text-body);
+  line-height: var(--leading-relaxed);
 }
 
-.service-title {
-  font-size: var(--text-2xl);
+.services__item-cta {
+  font-family: var(--font-ui);
+  font-size: var(--text-ui);
   font-weight: 600;
-  margin-bottom: var(--space-md);
-  color: var(--text-on-dark);
-}
-
-.service-description {
-  font-size: var(--text-base);
-  line-height: 1.8;
-  color: rgba(255, 255, 255, 0.8);
-  margin-bottom: var(--space-lg);
-  min-height: 120px;
-}
-
-.service-btn {
-  display: inline-block;
-  padding: var(--space-sm) var(--space-lg);
-  background: var(--accent);
-  color: var(--text-on-accent);
-  font-weight: 600;
-  border-radius: var(--radius-md);
-  transition: var(--transition-base);
+  color: var(--gold-500);
   text-transform: uppercase;
-  letter-spacing: 0.025em;
-  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  align-self: center;
+  white-space: nowrap;
+  transition: color var(--duration-fast) var(--ease-out-quart);
+}
+.services__item-cta:hover,
+.services__item-cta:focus-visible {
+  color: var(--gold-400);
 }
 
-.service-btn:hover {
-  background: var(--accent-hover);
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
-}
-
-@media (max-width: 1024px) {
-  .services {
-    padding: var(--space-2xl) 0;
+@media (max-width: 768px) {
+  .services__item {
+    grid-template-columns: auto 1fr;
+    gap: var(--space-4);
   }
-
-  .services-grid {
-    grid-template-columns: 1fr;
-    gap: var(--space-lg);
-  }
-
-  .service-card {
-    padding: var(--space-lg) var(--space-md);
-  }
-
-  .service-description {
-    min-height: auto;
+  .services__item-cta {
+    grid-column: 1 / -1;
+    justify-self: start;
+    margin-top: var(--space-2);
   }
 }
