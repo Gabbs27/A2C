@@ -9,7 +9,7 @@ const Layout = () => {
     <div className="App">
       <a href="#main-content" className="skip-nav">Saltar al contenido</a>
       <Header />
-      <main id="main-content">
+      <main id="main-content" tabIndex={-1}>
         <Outlet />
       </main>
       <Footer />
