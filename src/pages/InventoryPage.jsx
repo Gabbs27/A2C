@@ -225,7 +225,7 @@ const InventoryPage = () => {
         <header className="inventory-header">
           <p className="eyebrow">Inventario</p>
           <h1 className="display-xl inventory-title">Nuestros vehículos.</h1>
-          <p className="inventory-subtitle tabular">
+          <p className="inventory-subtitle tabular" aria-live="polite" aria-atomic="true">
             {String(filteredVehicles.length).padStart(2, '0')} de {String(vehicles.length).padStart(2, '0')} vehículos
           </p>
         </header>
@@ -243,17 +243,21 @@ const InventoryPage = () => {
             />
             {search && (
               <button
+                type="button"
                 className="inventory-search__clear"
                 onClick={() => updateFilter('search', '')}
                 aria-label="Limpiar búsqueda"
               >
-                <FiX size={16} />
+                <FiX size={16} aria-hidden="true" />
               </button>
             )}
           </div>
           <button
+            type="button"
             className={`inventory-filter-toggle ${filtersOpen ? 'active' : ''}`}
             onClick={() => setFiltersOpen(!filtersOpen)}
+            aria-expanded={filtersOpen}
+            aria-controls="inventory-filters-panel"
           >
             <FiFilter size={16} />
             Filtros
@@ -262,7 +266,11 @@ const InventoryPage = () => {
         </div>
 
         {/* Filters Bar */}
-        <div className={`inventory-filters ${filtersOpen ? 'open' : ''}`}>
+        <div
+          id="inventory-filters-panel"
+          className={`inventory-filters ${filtersOpen ? 'open' : ''}`}
+          aria-hidden={!filtersOpen}
+        >
           <div className="inventory-filters__grid">
             <div className="inventory-filter-group">
               <label>Marca</label>
@@ -372,8 +380,8 @@ const InventoryPage = () => {
           </div>
 
           {hasActiveFilters && (
-            <button className="inventory-filters__clear" onClick={clearFilters}>
-              <FiX size={14} />
+            <button type="button" className="inventory-filters__clear" onClick={clearFilters}>
+              <FiX size={14} aria-hidden="true" />
               Limpiar Filtros
             </button>
           )}
@@ -424,12 +432,14 @@ const InventoryPage = () => {
               </span>
               <div className="inventory-compare-bar__actions">
                 <button
+                  type="button"
                   className="inventory-compare-bar__clear"
                   onClick={() => setCompareIds([])}
                 >
                   Limpiar selecci&oacute;n
                 </button>
                 <button
+                  type="button"
                   className="inventory-compare-bar__btn"
                   onClick={goToCompare}
                 >

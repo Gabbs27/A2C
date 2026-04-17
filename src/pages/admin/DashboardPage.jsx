@@ -210,7 +210,7 @@ const DashboardPage = () => {
       {/* Header */}
       <div className="dashboard-header">
         <h1>Panel de Administraci&oacute;n</h1>
-        <button className="dashboard-logout-btn" onClick={handleSignOut}>
+        <button type="button" className="dashboard-logout-btn" onClick={handleSignOut}>
           <FiLogOut />
           Cerrar Sesi&oacute;n
         </button>
