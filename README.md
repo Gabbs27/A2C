@@ -1,104 +1,142 @@
-# A2C INTERNATIONAL - SALE AND SERVICES
+# A2C International — Sale and Services
 
-Sitio web profesional para A2C International, empresa dedicada a la venta y servicio de vehículos de lujo y exóticos.
+Web app de concesionaria de vehículos premium en República Dominicana. Diseño **dark-first, neo-classic magazine** (2026 refresh). Construida con React 18 + Vite + Supabase.
 
-## 🎨 Guía de Marca
+## Stack
 
-### Colores Principales
-- **Plata Metálico**: `#C0C0C0` (color principal del logo)
-- **Negro/Gris Oscuro**: `#1A1A1A` (contrastes y texto)
-- **Azul (Acento)**: `#3B82F6` (botones y CTAs)
+- **Framework:** React 18, React Router 7
+- **Build:** Vite 5
+- **Backend:** Supabase (PostgreSQL + Storage + Auth)
+- **Data layer:** TanStack Query (cache, stale-while-revalidate)
+- **Styling:** CSS con design tokens, variable fonts (Fraunces + Inter Tight) self-hosted
+- **SEO:** react-helmet-async, JSON-LD (AutoDealer + Vehicle), sitemap.xml
+- **Testing:** Playwright (E2E smoke)
+- **CI:** GitHub Actions (build + Lighthouse + E2E)
+- **Deploy:** Vercel (ver `vercel.json`) o GitHub Pages (ver `scripts.deploy`)
 
-### Tipografía
-- **Fuentes**: Poppins, Inter (Google Fonts)
-- **Headings**: font-weight 700-900
-- **Body**: font-weight 400
+## Design System
 
-### Estilo Visual
-- Moderno, profesional, metálico, sofisticado
-- Efectos 3D y metálicos en títulos
-- Sombras suaves en cards
-- Transiciones smooth (200ms)
-- Border-radius moderno (8px - 16px)
+Paleta **monocromática plata/negro + dorado como único acento**, optimizada para dark-first:
 
-## 🚀 Instalación
+- Superficies: `--ink-950` · `--ink-900` · `--ink-800` · `--ink-700` · `--ink-600`
+- Plata (logo): `--silver-100` · `--silver-300` · `--silver-500` · `--silver-700`
+- Acento dorado: `--gold-400` · `--gold-500` · `--gold-600`
+- Semánticos: `--success` · `--warning` · `--danger` · `--info` · `--whatsapp`
+
+**Tipografía:**
+- `Fraunces` (variable, opsz + SOFT + wght axes) — display + body
+- `Inter Tight` (variable) — UI chrome (nav, buttons, labels)
+
+Todos los tokens en [`src/index.css`](src/index.css). Motion utilities en [`src/styles/motion.css`](src/styles/motion.css).
+
+**Design docs:**
+- [`docs/plans/2026-04-17-refresh-visual-2026-design.md`](docs/plans/2026-04-17-refresh-visual-2026-design.md)
+- [`docs/plans/2026-04-17-refresh-visual-2026-implementation.md`](docs/plans/2026-04-17-refresh-visual-2026-implementation.md)
+
+## Desarrollo
 
 ```bash
-# Instalar dependencias
 npm install
-
-# Ejecutar en desarrollo
-npm run dev
-
-# Build para producción
-npm run build
+npm run dev      # dev server at http://localhost:5173/A2C/
 ```
 
-## 📍 Ubicación
+### Variables de entorno
 
-**Dirección**: Avenida 6, Santo Domingo 11114, República Dominicana  
-**Google Maps**: https://maps.app.goo.gl/jV8nB1RSGDy96rbc7
+Crear `.env.local` en la raíz:
 
-**Teléfono**:
-- Ventas: +1 (829) 447-0259
-
-**Horario**:
-- Lunes - Viernes: 9:00 AM - 8:00 PM
-- Sábado: 9:00 AM - 6:00 PM
-- Domingo: 11:00 AM - 5:00 PM
-
-## 📦 Tecnologías
-
-- React 18
-- Vite
-- React Icons
-- CSS3 con variables personalizadas
-- Google Fonts (Poppins, Inter)
-
-## 🎯 Secciones
-
-1. **Header/Navigation**: Menú fijo con logo y navegación
-2. **Hero**: Slider de imágenes con CTAs
-3. **Welcome**: Introducción a la empresa
-4. **Services**: Grid de servicios (Compra, Venta, Servicio)
-5. **Features**: Por qué elegir A2C International
-6. **Contact**: Información de contacto + Google Maps
-7. **Footer**: Links, contacto, horarios, redes sociales
-
-## 📱 Responsive
-
-- Mobile First approach
-- Breakpoints: 640px (tablet), 1024px (desktop)
-- Menu hamburguesa en móvil
-
-## 🎨 Sistema de Diseño
-
-### Espaciado (base 8px)
-```css
---space-xs: 0.5rem (8px)
---space-sm: 1rem (16px)
---space-md: 1.5rem (24px)
---space-lg: 2rem (32px)
---space-xl: 3rem (48px)
---space-2xl: 4rem (64px)
---space-3xl: 6rem (96px)
+```bash
+VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+VITE_SUPABASE_ANON_KEY=YOUR_ANON_KEY
 ```
 
-### Border Radius
-```css
---radius-sm: 0.25rem (4px)
---radius-md: 0.5rem (8px)
---radius-lg: 1rem (16px)
---radius-xl: 1.5rem (24px)
+Tablas esperadas en Supabase:
+- `vehicles` — id, brand, model, year, price_usd, mileage, status (disponible/reservado/vendido), featured, etc.
+- `vehicle_images` — vehicle_id, image_url, is_primary, display_order
+- `exchange_rates` — usd_to_dop, updated_at
+
+## Build
+
+```bash
+npm run build    # produces dist/
+npm run preview  # local production preview
 ```
 
-### Transiciones
-```css
---transition-fast: 150ms ease-in-out
---transition-base: 200ms ease-in-out
---transition-slow: 300ms ease-in-out
+Bundle objetivo:
+- JS inicial (public): ~130kb gzipped (react + supabase + query + app shell)
+- CSS: ~15kb gzipped (compartido + por ruta)
+- Admin bundle se carga solo al entrar a `/admin/*`
+
+## Testing
+
+```bash
+npm run test:e2e       # headless Playwright
+npm run test:e2e:ui    # interactive UI mode
 ```
 
-## 📄 Licencia
+Tests en [`tests/e2e/smoke.spec.js`](tests/e2e/smoke.spec.js). Cubren: home, inventario, búsqueda, admin login, skip-nav.
 
-© 2025 A2C INTERNATIONAL. Todos los derechos reservados.
+## Deploy
+
+### Vercel (recomendado)
+
+`vercel.json` incluye CSP, HSTS, cache headers para assets/fonts, SPA rewrite. Para desplegar:
+
+1. Conectar repo a Vercel
+2. Framework: Vite
+3. Build command: `npm run build`
+4. Output directory: `dist`
+5. Actualizar `SITE_URL` en `src/lib/schema.js` con el dominio real
+
+### GitHub Pages (legacy)
+
+```bash
+npm run deploy   # publica a gh-pages
+```
+
+Requiere que `base: '/A2C/'` en `vite.config.js` coincida con el subpath.
+
+## Accesibilidad
+
+- WCAG AA mínimo (AAA en contraste de texto)
+- Focus visible con outline dorado
+- `prefers-reduced-motion` respetado en todas las animaciones
+- Skip-nav a `#main-content`
+- ARIA en carousel (Hero), modals (lightbox), toggles (compare), expandable (filtros)
+- Touch targets ≥44px
+
+## Performance
+
+- Self-hosted WOFF2 con `font-display: swap` + preload
+- Imágenes con `loading="lazy"` + `decoding="async"`
+- `<Picture>` component con WebP fallback
+- Code splitting por ruta (React.lazy)
+- Manual chunks: react-vendor, query-vendor, supabase
+
+## Estructura
+
+```
+src/
+├─ components/
+│  ├─ ui/            Button, Picture
+│  ├─ Header, Hero, Footer, VehicleCard, ...
+│  ├─ ErrorBoundary, SEO
+├─ pages/
+│  ├─ HomePage, InventoryPage, VehicleDetailPage, ComparePage
+│  └─ admin/        LoginPage, DashboardPage, VehicleFormPage
+├─ hooks/            useReducedMotion, useIntersection
+├─ lib/              supabase, queryClient, schema
+├─ context/          AuthContext
+├─ styles/           motion.css
+└─ index.css         design tokens
+
+public/
+├─ fonts/            Fraunces + Inter Tight WOFF2 + OFL licenses
+├─ logo-dark.png     logo metálico sobre negro
+├─ logo-light.png    logo sobre fondo claro
+├─ robots.txt
+└─ 404.html          SPA redirect for GH Pages
+```
+
+## Licencia
+
+Código propietario de A2C International. Fuentes (Fraunces, Inter Tight) bajo SIL Open Font License 1.1 — ver `public/fonts/LICENSE-*.txt`.
