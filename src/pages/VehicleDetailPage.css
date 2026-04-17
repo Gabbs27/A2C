@@ -60,12 +60,12 @@
 }
 
 .detail-breadcrumb a {
-  color: var(--accent-blue);
+  color: var(--accent);
   transition: color var(--transition-fast);
 }
 
 .detail-breadcrumb a:hover {
-  color: var(--accent-blue-hover);
+  color: var(--accent-hover);
 }
 
 /* Top Layout: Gallery + Info */

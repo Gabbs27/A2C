@@ -97,37 +97,43 @@ const Hero = () => {
       {/* Content - separated from slides so it animates independently */}
       <div className="hero-content-wrapper">
         <div className="container">
-          <div className={`hero-content ${textVisible ? 'visible' : ''}`}>
-            <h1 className="hero-title">{slide.title}</h1>
-            <p className="hero-subtitle">{slide.subtitle}</p>
-            <p className="hero-description">{slide.description}</p>
-            <div className="hero-buttons">
-              <Link to="/inventario" className="btn btn-primary">Comprar un Auto</Link>
-              <a
-                href="https://wa.me/18294470259?text=Hola,%20me%20interesa%20vender%20mi%20veh%C3%ADculo"
-                className="btn btn-secondary"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Vender un Auto
-              </a>
+          <div className="hero-content">
+            {/* Only text animates with slide changes */}
+            <div className={`hero-text ${textVisible ? 'visible' : ''}`}>
+              <h1 className="hero-title">{slide.title}</h1>
+              <p className="hero-subtitle">{slide.subtitle}</p>
+              <p className="hero-description">{slide.description}</p>
             </div>
-            <div className="hero-search">
-              <select
-                className="hero-search__select"
-                value={selectedBrand}
-                onChange={(e) => setSelectedBrand(e.target.value)}
-                aria-label="Buscar por marca"
-              >
-                <option value="">Todas las Marcas</option>
-                {BRANDS.map(brand => (
-                  <option key={brand} value={brand}>{brand}</option>
-                ))}
-              </select>
-              <button className="hero-search__btn" onClick={handleSearch}>
-                <FiSearch size={18} />
-                Buscar
-              </button>
+            {/* Buttons and search stay static */}
+            <div className="hero-actions">
+              <div className="hero-buttons">
+                <Link to="/inventario" className="btn btn-primary">Comprar un Auto</Link>
+                <a
+                  href="https://wa.me/18294470259?text=Hola,%20me%20interesa%20vender%20mi%20veh%C3%ADculo"
+                  className="btn btn-secondary"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Vender un Auto
+                </a>
+              </div>
+              <div className="hero-search">
+                <select
+                  className="hero-search__select"
+                  value={selectedBrand}
+                  onChange={(e) => setSelectedBrand(e.target.value)}
+                  aria-label="Buscar por marca"
+                >
+                  <option value="">Todas las Marcas</option>
+                  {BRANDS.map(brand => (
+                    <option key={brand} value={brand}>{brand}</option>
+                  ))}
+                </select>
+                <button className="hero-search__btn" onClick={handleSearch}>
+                  <FiSearch size={18} />
+                  Buscar
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -52,8 +52,8 @@
 .service-btn {
   display: inline-block;
   padding: var(--space-sm) var(--space-lg);
-  background: var(--accent-blue);
-  color: var(--text-on-dark);
+  background: var(--accent);
+  color: var(--text-on-accent);
   font-weight: 600;
   border-radius: var(--radius-md);
   transition: var(--transition-base);
@@ -63,9 +63,9 @@
 }
 
 .service-btn:hover {
-  background: var(--accent-blue-hover);
+  background: var(--accent-hover);
   transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
 }
 
 @media (max-width: 1024px) {

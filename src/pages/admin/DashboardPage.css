@@ -148,7 +148,7 @@
 }
 
 .exchange-rate-current span {
-  color: var(--accent-gold);
+  color: var(--accent);
   font-weight: 600;
   font-size: var(--text-lg);
 }
@@ -173,13 +173,13 @@
 }
 
 .exchange-rate-form input:focus {
-  border-color: var(--accent-blue);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
 }
 
 .exchange-rate-form button {
-  background: var(--accent-blue);
-  color: var(--text-on-dark);
+  background: var(--accent);
+  color: var(--text-on-accent);
   border: none;
   border-radius: var(--radius-md);
   padding: var(--space-xs) var(--space-sm);
@@ -193,7 +193,7 @@
 }
 
 .exchange-rate-form button:hover {
-  background: var(--accent-blue-hover);
+  background: var(--accent-hover);
 }
 
 .exchange-rate-form button:disabled {
@@ -278,7 +278,7 @@
 }
 
 .vehicle-price {
-  color: var(--accent-gold);
+  color: var(--accent);
   font-weight: 600;
 }
 
@@ -388,12 +388,12 @@
 
 .action-btn.edit {
   background: var(--color-focus);
-  color: var(--accent-blue);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: var(--accent);
+  border: 1px solid rgba(212, 175, 55, 0.3);
 }
 
 .action-btn.edit:hover {
-  background: rgba(59, 130, 246, 0.25);
+  background: rgba(212, 175, 55, 0.25);
 }
 
 .action-btn.delete {

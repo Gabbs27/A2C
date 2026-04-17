@@ -60,14 +60,26 @@
 .hero-content {
   color: var(--text-on-dark);
   max-width: 700px;
+  width: 100%;
+}
+
+/* Only text animates on slide change */
+.hero-text {
+  min-height: 200px;
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.5s ease-out, transform 0.5s ease-out;
 }
 
-.hero-content.visible {
+.hero-text.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Buttons and search stay always visible */
+.hero-actions {
+  width: 100%;
+  margin-top: var(--space-sm);
 }
 
 .hero-title {
@@ -124,14 +136,14 @@
 }
 
 .btn-primary {
-  background: var(--accent-blue);
-  color: var(--text-on-dark);
+  background: var(--accent);
+  color: var(--text-on-accent);
 }
 
 .btn-primary:hover {
-  background: var(--accent-blue-hover);
+  background: var(--accent-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
 }
 
 .btn-secondary {
@@ -191,8 +203,8 @@
   align-items: center;
   gap: var(--space-xs);
   padding: var(--space-xs) var(--space-sm);
-  background: var(--accent-blue);
-  color: var(--text-on-dark);
+  background: var(--accent);
+  color: var(--text-on-accent);
   border: none;
   border-radius: var(--radius-md);
   font-family: inherit;
@@ -204,9 +216,9 @@
 }
 
 .hero-search__btn:hover {
-  background: var(--accent-blue-hover);
+  background: var(--accent-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
 }
 
 .slider-btn {
@@ -263,6 +275,10 @@
 }
 
 @media (max-width: 1024px) {
+  .hero-text {
+    min-height: 160px;
+  }
+
   .hero-title {
     font-size: var(--text-4xl);
   }
@@ -293,6 +309,10 @@
 }
 
 @media (max-width: 768px) {
+  .hero-text {
+    min-height: 120px;
+  }
+
   .hero-title {
     font-size: var(--text-3xl);
   }

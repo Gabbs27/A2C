@@ -65,13 +65,13 @@
   align-items: center;
   gap: var(--space-xs);
   font-size: var(--text-sm);
-  color: var(--accent-blue);
+  color: var(--accent);
   margin-bottom: var(--space-sm);
   transition: color var(--transition-fast);
 }
 
 .compare-back:hover {
-  color: var(--accent-blue-hover);
+  color: var(--accent-hover);
 }
 
 .compare-title {
@@ -196,11 +196,11 @@
 
 /* Differing row highlight */
 .compare-table__row--differs .compare-table__value {
-  background: rgba(59, 130, 246, 0.06);
+  background: rgba(212, 175, 55, 0.06);
 }
 
 .compare-table__row--differs .compare-table__label {
-  background: rgba(59, 130, 246, 0.08);
+  background: rgba(212, 175, 55, 0.08);
 }
 
 /* Feature icons */

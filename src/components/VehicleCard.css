@@ -180,7 +180,7 @@
   width: 16px;
   height: 16px;
   cursor: pointer;
-  accent-color: var(--accent-blue);
+  accent-color: var(--accent);
 }
 
 /* Responsive */
