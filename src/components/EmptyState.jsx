@@ -1,23 +1,24 @@
-import React from 'react'
 import './EmptyState.css'
 
-const EmptyState = ({ icon: Icon, title, message, action, dark = false }) => {
+export default function EmptyState({ icon: Icon, title, message, action }) {
   return (
-    <div className={`empty-state-component ${dark ? 'empty-state-component--dark' : ''}`}>
+    <div className="empty-state" role="status">
       {Icon && (
-        <div className="empty-state-component__icon">
+        <div className="empty-state__icon" aria-hidden="true">
           <Icon size={48} />
         </div>
       )}
-      {title && <h3 className="empty-state-component__title">{title}</h3>}
-      {message && <p className="empty-state-component__message">{message}</p>}
+      {title && <h3 className="empty-state__title">{title}</h3>}
+      {message && <p className="empty-state__message">{message}</p>}
       {action && (
-        <button className="empty-state-component__action" onClick={action.onClick}>
+        <button
+          type="button"
+          className="btn btn--primary btn--md"
+          onClick={action.onClick}
+        >
           {action.label}
         </button>
       )}
     </div>
   )
 }
-
-export default EmptyState
