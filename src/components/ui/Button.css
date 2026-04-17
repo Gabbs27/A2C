@@ -1,0 +1,105 @@
+/* ═══════════════════════════════════════════════════════════════
+   Button primitive — gold-accent, editorial, dark-first
+   ═══════════════════════════════════════════════════════════════ */
+
+.btn {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: var(--text-ui);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-out-quart),
+    color var(--duration-fast) var(--ease-out-quart),
+    border-color var(--duration-fast) var(--ease-out-quart),
+    box-shadow var(--duration-fast) var(--ease-out-quart),
+    transform var(--duration-instant) var(--ease-out-quart);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  white-space: nowrap;
+  min-height: 44px; /* a11y: touch target */
+  user-select: none;
+  text-decoration: none;
+}
+.btn:active {
+  transform: scale(0.98);
+}
+.btn[disabled],
+.btn[aria-disabled='true'] {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+/* ─── Sizes ─── */
+.btn--sm {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-ui-sm);
+  min-height: 36px;
+}
+.btn--md {
+  padding: var(--space-3) var(--space-6);
+}
+.btn--lg {
+  padding: var(--space-4) var(--space-8);
+  min-height: 52px;
+}
+
+/* ─── Primary: gold outline, inverts on hover ─── */
+.btn--primary {
+  background: transparent;
+  color: var(--gold-500);
+  border: 1px solid var(--gold-500);
+}
+.btn--primary:hover,
+.btn--primary:focus-visible {
+  background: var(--gold-500);
+  color: var(--ink-950);
+  box-shadow: var(--shadow-glow-gold);
+}
+
+/* ─── Solid: gold fill ─── */
+.btn--solid {
+  background: var(--gold-500);
+  color: var(--ink-950);
+  border: 1px solid var(--gold-500);
+}
+.btn--solid:hover,
+.btn--solid:focus-visible {
+  background: var(--gold-400);
+  border-color: var(--gold-400);
+  box-shadow: var(--shadow-glow-gold);
+}
+
+/* ─── Ghost: transparent w/ silver border ─── */
+.btn--ghost {
+  background: transparent;
+  color: var(--silver-100);
+  border: 1px solid var(--ink-600);
+}
+.btn--ghost:hover,
+.btn--ghost:focus-visible {
+  border-color: var(--gold-500);
+  color: var(--gold-400);
+}
+
+/* ─── Link: inline, no chrome ─── */
+.btn--link {
+  background: transparent;
+  color: var(--gold-500);
+  border: none;
+  padding: 0;
+  min-height: auto;
+  text-transform: none;
+  letter-spacing: 0;
+  font-family: inherit;
+  font-weight: inherit;
+}
+.btn--link:hover,
+.btn--link:focus-visible {
+  color: var(--gold-400);
+}
