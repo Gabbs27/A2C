@@ -268,11 +268,21 @@ const VehicleDetailPage = () => {
               )}
               {images.length > 1 && (
                 <>
-                  <button className="detail-gallery__nav detail-gallery__nav--prev" onClick={(e) => { e.stopPropagation(); prevImage() }}>
-                    <FiChevronLeft size={24} />
+                  <button
+                    type="button"
+                    className="detail-gallery__nav detail-gallery__nav--prev"
+                    onClick={(e) => { e.stopPropagation(); prevImage() }}
+                    aria-label="Imagen anterior"
+                  >
+                    <FiChevronLeft size={24} aria-hidden="true" />
                   </button>
-                  <button className="detail-gallery__nav detail-gallery__nav--next" onClick={(e) => { e.stopPropagation(); nextImage() }}>
-                    <FiChevronRight size={24} />
+                  <button
+                    type="button"
+                    className="detail-gallery__nav detail-gallery__nav--next"
+                    onClick={(e) => { e.stopPropagation(); nextImage() }}
+                    aria-label="Siguiente imagen"
+                  >
+                    <FiChevronRight size={24} aria-hidden="true" />
                   </button>
                 </>
               )}
@@ -283,13 +293,17 @@ const VehicleDetailPage = () => {
                 {images.map((img, idx) => (
                   <button
                     key={img.id || idx}
+                    type="button"
                     className={`detail-gallery__thumb ${idx === activeImageIndex ? 'active' : ''}`}
                     onClick={() => setActiveImageIndex(idx)}
+                    aria-label={`Ver imagen ${idx + 1} de ${images.length}`}
+                    aria-current={idx === activeImageIndex}
                   >
                     <img
                       src={img.image_url}
-                      alt={`Imagen ${idx + 1}`}
+                      alt=""
                       loading="lazy"
+                      decoding="async"
                     />
                   </button>
                 ))}
@@ -365,10 +379,11 @@ const VehicleDetailPage = () => {
                 Llamar
               </a>
               <button
+                type="button"
                 onClick={handleShare}
                 className="detail-actions__btn detail-actions__btn--share"
               >
-                <FiShare2 size={16} />
+                <FiShare2 size={16} aria-hidden="true" />
                 Compartir
               </button>
             </div>
@@ -531,31 +546,46 @@ const VehicleDetailPage = () => {
 
       {/* Lightbox */}
       {lightboxOpen && images.length > 0 && (
-        <div className="detail-lightbox" onClick={() => setLightboxOpen(false)}>
-          <button className="detail-lightbox__close" onClick={() => setLightboxOpen(false)}>
-            <FiX size={28} />
+        <div
+          className="detail-lightbox"
+          onClick={() => setLightboxOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Galería de ${vehicle.brand} ${vehicle.model}`}
+        >
+          <button
+            type="button"
+            className="detail-lightbox__close"
+            onClick={() => setLightboxOpen(false)}
+            aria-label="Cerrar galería"
+          >
+            <FiX size={28} aria-hidden="true" />
           </button>
           <button
+            type="button"
             className="detail-lightbox__nav detail-lightbox__nav--prev"
             onClick={(e) => { e.stopPropagation(); prevImage() }}
+            aria-label="Imagen anterior"
           >
-            <FiChevronLeft size={32} />
+            <FiChevronLeft size={32} aria-hidden="true" />
           </button>
           <div className="detail-lightbox__content" onClick={(e) => e.stopPropagation()}>
             <img
               src={images[activeImageIndex]?.image_url}
-              alt={`${vehicle.brand} ${vehicle.model}`}
+              alt={`${vehicle.brand} ${vehicle.model} — imagen ${activeImageIndex + 1} de ${images.length}`}
               className="detail-lightbox__img"
             />
-            <div className="detail-lightbox__counter">
+            <div className="detail-lightbox__counter tabular" aria-live="polite">
               {activeImageIndex + 1} / {images.length}
             </div>
           </div>
           <button
+            type="button"
             className="detail-lightbox__nav detail-lightbox__nav--next"
             onClick={(e) => { e.stopPropagation(); nextImage() }}
+            aria-label="Siguiente imagen"
           >
-            <FiChevronRight size={32} />
+            <FiChevronRight size={32} aria-hidden="true" />
           </button>
         </div>
       )}
