@@ -125,8 +125,8 @@
 .vehicle-form .form-group input:focus,
 .vehicle-form .form-group select:focus,
 .vehicle-form .form-group textarea:focus {
-  border-color: var(--accent-blue);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
 }
 
 .vehicle-form .form-group select {
@@ -159,7 +159,7 @@
 .checkbox-group input[type="checkbox"] {
   width: 20px;
   height: 20px;
-  accent-color: var(--accent-blue);
+  accent-color: var(--accent);
   cursor: pointer;
 }
 
@@ -180,8 +180,8 @@
 }
 
 .features-add-btn {
-  background: var(--accent-blue);
-  color: var(--text-on-dark);
+  background: var(--accent);
+  color: var(--text-on-accent);
   border: none;
   border-radius: var(--radius-md);
   padding: var(--space-sm);
@@ -196,7 +196,7 @@
 }
 
 .features-add-btn:hover {
-  background: var(--accent-blue-hover);
+  background: var(--accent-hover);
 }
 
 .features-tags {
@@ -207,9 +207,9 @@
 }
 
 .feature-tag {
-  background: rgba(59, 130, 246, 0.15);
-  color: var(--accent-blue-light);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--accent-light);
+  border: 1px solid rgba(212, 175, 55, 0.3);
   border-radius: var(--radius-full);
   padding: var(--space-2xs) var(--space-sm);
   font-size: var(--text-sm);
@@ -221,7 +221,7 @@
 .feature-tag button {
   background: none;
   border: none;
-  color: var(--accent-blue-light);
+  color: var(--accent-light);
   cursor: pointer;
   font-size: var(--text-base);
   padding: 0;
@@ -263,9 +263,9 @@
 }
 
 .common-feature-btn:hover {
-  background: rgba(59, 130, 246, 0.15);
-  color: var(--accent-blue-light);
-  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--accent-light);
+  border-color: rgba(212, 175, 55, 0.3);
 }
 
 /* Images Section */
@@ -280,8 +280,8 @@
 }
 
 .image-upload-area:hover {
-  border-color: var(--accent-blue);
-  background: rgba(59, 130, 246, 0.05);
+  border-color: var(--accent);
+  background: rgba(212, 175, 55, 0.05);
 }
 
 .image-upload-area input {
@@ -306,7 +306,7 @@
 }
 
 .image-upload-text span {
-  color: var(--accent-blue);
+  color: var(--accent);
   font-weight: 500;
 }
 
@@ -352,13 +352,13 @@
 }
 
 .image-url-input:focus {
-  border-color: var(--accent-blue);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
 }
 
 .image-url-btn {
-  background: var(--accent-blue);
-  color: var(--text-on-dark);
+  background: var(--accent);
+  color: var(--text-on-accent);
   border: none;
   border-radius: var(--radius-md);
   padding: var(--space-xs) var(--space-sm);
@@ -374,7 +374,7 @@
 }
 
 .image-url-btn:hover:not(:disabled) {
-  background: var(--accent-blue-hover);
+  background: var(--accent-hover);
 }
 
 .image-url-btn:disabled {
@@ -410,7 +410,7 @@
 }
 
 .image-preview-item.primary {
-  border-color: var(--accent-gold);
+  border-color: var(--accent);
 }
 
 .image-preview-item img {
@@ -441,7 +441,7 @@
 }
 
 .image-primary-radio input[type="radio"] {
-  accent-color: var(--accent-gold);
+  accent-color: var(--accent);
   width: 14px;
   height: 14px;
   cursor: pointer;

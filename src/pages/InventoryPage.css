@@ -343,8 +343,8 @@
 
 .inventory-compare-bar__btn {
   padding: var(--space-xs) var(--space-lg);
-  background: var(--accent-blue);
-  color: var(--text-on-dark);
+  background: var(--accent);
+  color: var(--text-on-accent);
   border-radius: var(--radius-md);
   font-family: inherit;
   font-size: var(--text-sm);
@@ -353,7 +353,7 @@
 }
 
 .inventory-compare-bar__btn:hover {
-  background: var(--accent-blue-hover);
+  background: var(--accent-hover);
 }
 
 /* Responsive */
