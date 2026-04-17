@@ -119,16 +119,23 @@
 
 /* ─── Filters panel ─── */
 .inventory-filters {
-  display: grid;
-  grid-template-rows: 0fr;
   overflow: hidden;
-  transition: grid-template-rows var(--duration-slow) var(--ease-magazine);
+  max-height: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    max-height var(--duration-slow) var(--ease-magazine),
+    opacity var(--duration-base) var(--ease-out-quart),
+    visibility 0s linear var(--duration-slow);
 }
 .inventory-filters.open {
-  grid-template-rows: 1fr;
-}
-.inventory-filters > * {
-  min-height: 0;
+  max-height: 640px;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    max-height var(--duration-slow) var(--ease-magazine),
+    opacity var(--duration-base) var(--ease-out-quart),
+    visibility 0s linear 0s;
 }
 .inventory-filters__grid {
   display: grid;
