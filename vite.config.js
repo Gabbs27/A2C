@@ -9,6 +9,7 @@ export default defineConfig({
     Sitemap({
       hostname: 'https://a2cinternational.com',
       exclude: ['/admin', '/admin/*'],
+      generateRobotsTxt: false,
     }),
   ],
   base: '/A2C/',
