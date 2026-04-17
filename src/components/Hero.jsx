@@ -1,163 +1,130 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { FiChevronLeft, FiChevronRight, FiSearch } from 'react-icons/fi'
+import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { FiArrowRight } from 'react-icons/fi'
+import { FaWhatsapp } from 'react-icons/fa'
+import { useReducedMotion } from '../hooks/useReducedMotion'
 import './Hero.css'
 
-const BRANDS = [
-  'Mercedes-Benz', 'BMW', 'Porsche', 'Land Rover', 'Toyota',
-  'Honda', 'Hyundai', 'Audi', 'Lexus', 'Jeep'
+const SLIDES = [
+  {
+    eyebrow: 'Edición 2026',
+    prefix: 'Lujo,',
+    emphasis: 'exótico,',
+    suffix: 'y mucho más.',
+    image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1800&q=80',
+  },
+  {
+    eyebrow: 'Potencia y elegancia',
+    prefix: 'Performance',
+    emphasis: 'alemán,',
+    suffix: 'precisión pura.',
+    image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1800&q=80',
+  },
+  {
+    eyebrow: 'Herencia deportiva',
+    prefix: 'Conducción',
+    emphasis: 'excepcional,',
+    suffix: 'sin compromisos.',
+    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1800&q=80',
+  },
+  {
+    eyebrow: 'Aventura sin límites',
+    prefix: 'Versatilidad',
+    emphasis: 'británica,',
+    suffix: 'confort extremo.',
+    image: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1800&q=80',
+  },
 ]
 
-const slides = [
-  {
-    title: 'Lujo. Exótico. Y Mucho Más.',
-    subtitle: 'Mercedes-Benz',
-    description: 'Lujoso & Confortable',
-    image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1600&q=80'
-  },
-  {
-    title: 'Potencia y Elegancia',
-    subtitle: 'BMW',
-    description: 'Deportivo & Divertido',
-    image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1600&q=80'
-  },
-  {
-    title: 'Performance Excepcional',
-    subtitle: 'Porsche',
-    description: 'Como Nuevo',
-    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1600&q=80'
-  },
-  {
-    title: 'Aventura sin Límites',
-    subtitle: 'Land Rover',
-    description: 'Lujoso & Versátil',
-    image: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1600&q=80'
-  }
-]
+const AUTOPLAY_MS = 7000
 
-const Hero = () => {
-  const [currentSlide, setCurrentSlide] = useState(0)
-  const [textVisible, setTextVisible] = useState(true)
-  const [selectedBrand, setSelectedBrand] = useState('')
-  const navigate = useNavigate()
-
-  const goToSlide = useCallback((index) => {
-    // Fade out text first
-    setTextVisible(false)
-    // After text fades out, change slide and fade text back in
-    setTimeout(() => {
-      setCurrentSlide(index)
-      setTextVisible(true)
-    }, 300)
-  }, [])
-
-  const nextSlide = useCallback(() => {
-    goToSlide((currentSlide + 1) % slides.length)
-  }, [currentSlide, goToSlide])
-
-  const prevSlide = useCallback(() => {
-    goToSlide((currentSlide - 1 + slides.length) % slides.length)
-  }, [currentSlide, goToSlide])
+export default function Hero() {
+  const [idx, setIdx] = useState(0)
+  const reduced = useReducedMotion()
+  const timerRef = useRef(null)
 
   useEffect(() => {
-    const timer = setInterval(nextSlide, 5000)
-    return () => clearInterval(timer)
-  }, [nextSlide])
+    if (reduced) return undefined
+    timerRef.current = setInterval(() => {
+      setIdx((i) => (i + 1) % SLIDES.length)
+    }, AUTOPLAY_MS)
+    return () => clearInterval(timerRef.current)
+  }, [reduced])
 
-  const handleSearch = () => {
-    if (selectedBrand) {
-      navigate(`/inventario?brand=${encodeURIComponent(selectedBrand)}`)
-    } else {
-      navigate('/inventario')
-    }
+  const pause = () => clearInterval(timerRef.current)
+  const resume = () => {
+    if (reduced) return
+    pause()
+    timerRef.current = setInterval(() => {
+      setIdx((i) => (i + 1) % SLIDES.length)
+    }, AUTOPLAY_MS)
   }
 
-  const slide = slides[currentSlide]
+  const active = SLIDES[idx]
 
   return (
     <section
       className="hero"
-      role="region"
-      aria-roledescription="carrusel"
+      aria-roledescription="carousel"
       aria-label="Vehículos destacados"
+      onMouseEnter={pause}
+      onMouseLeave={resume}
     >
-      {/* Background slides - only images */}
-      <div className="hero-slider">
-        {slides.map((s, index) => (
-          <div
-            key={index}
-            className={`hero-slide ${index === currentSlide ? 'active' : ''}`}
-            style={{ backgroundImage: `url(${s.image})` }}
-          >
-            <div className="hero-overlay" />
-          </div>
-        ))}
-      </div>
+      {SLIDES.map((slide, i) => (
+        <div
+          key={i}
+          className={`hero__slide ${i === idx ? 'is-active' : ''}`}
+          style={{ backgroundImage: `url(${slide.image})` }}
+          role="group"
+          aria-roledescription="slide"
+          aria-label={`${i + 1} de ${SLIDES.length}`}
+          aria-hidden={i !== idx}
+        />
+      ))}
+      <div className="hero__overlay" aria-hidden="true" />
 
-      {/* Content - separated from slides so it animates independently */}
-      <div className="hero-content-wrapper">
-        <div className="container">
-          <div className="hero-content">
-            {/* Only text animates with slide changes */}
-            <div className={`hero-text ${textVisible ? 'visible' : ''}`}>
-              <h1 className="hero-title">{slide.title}</h1>
-              <p className="hero-subtitle">{slide.subtitle}</p>
-              <p className="hero-description">{slide.description}</p>
-            </div>
-            {/* Buttons and search stay static */}
-            <div className="hero-actions">
-              <div className="hero-buttons">
-                <Link to="/inventario" className="btn btn-primary">Comprar un Auto</Link>
-                <a
-                  href="https://wa.me/18294470259?text=Hola,%20me%20interesa%20vender%20mi%20veh%C3%ADculo"
-                  className="btn btn-secondary"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Vender un Auto
-                </a>
-              </div>
-              <div className="hero-search">
-                <select
-                  className="hero-search__select"
-                  value={selectedBrand}
-                  onChange={(e) => setSelectedBrand(e.target.value)}
-                  aria-label="Buscar por marca"
-                >
-                  <option value="">Todas las Marcas</option>
-                  {BRANDS.map(brand => (
-                    <option key={brand} value={brand}>{brand}</option>
-                  ))}
-                </select>
-                <button className="hero-search__btn" onClick={handleSearch}>
-                  <FiSearch size={18} />
-                  Buscar
-                </button>
-              </div>
-            </div>
-          </div>
+      <div className="container hero__content">
+        <p className="eyebrow hero__eyebrow">{active.eyebrow}</p>
+        <h1 className="display-2xl hero__title" key={idx}>
+          {active.prefix} <em>{active.emphasis}</em>
+          <br />
+          {active.suffix}
+        </h1>
+        <div className="hero__actions">
+          <Link to="/inventario" className="btn btn--primary btn--lg btn-arrow">
+            <span>Explorar inventario</span>
+            <FiArrowRight className="arrow" aria-hidden="true" />
+          </Link>
+          <a
+            href="https://wa.me/18294470259?text=Hola,%20me%20interesa%20vender%20mi%20veh%C3%ADculo"
+            className="btn btn--ghost btn--lg"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Vender un auto por WhatsApp"
+          >
+            <FaWhatsapp aria-hidden="true" />
+            <span>Vender un auto</span>
+          </a>
         </div>
       </div>
 
-      <button className="slider-btn prev" onClick={prevSlide} aria-label="Slide anterior">
-        <FiChevronLeft size={30} />
-      </button>
-      <button className="slider-btn next" onClick={nextSlide} aria-label="Siguiente slide">
-        <FiChevronRight size={30} />
-      </button>
-
-      <div className="slider-dots">
-        {slides.map((_, index) => (
+      <div className="hero__indicators" aria-label="Navegación de slides">
+        {SLIDES.map((_, i) => (
           <button
-            key={index}
-            className={`dot ${index === currentSlide ? 'active' : ''}`}
-            onClick={() => goToSlide(index)}
-            aria-label={`Slide ${index + 1}`}
+            key={i}
+            type="button"
+            className={`hero__indicator ${i === idx ? 'is-active' : ''}`}
+            onClick={() => setIdx(i)}
+            aria-label={`Ir al slide ${i + 1}`}
+            aria-current={i === idx}
           />
         ))}
+        <span className="hero__counter">
+          <span className="tabular">{String(idx + 1).padStart(2, '0')}</span>
+          <span className="hero__counter-sep"> / </span>
+          <span className="tabular">{String(SLIDES.length).padStart(2, '0')}</span>
+        </span>
       </div>
     </section>
   )
 }
-
-export default Hero
