@@ -222,12 +222,13 @@ const InventoryPage = () => {
     <div className="inventory-page">
       <div className="container">
         {/* Page Header */}
-        <div className="inventory-header">
-          <h1 className="inventory-title">Nuestros Veh&iacute;culos</h1>
-          <p className="inventory-subtitle">
-            Mostrando {filteredVehicles.length} de {vehicles.length} veh&iacute;culos
+        <header className="inventory-header">
+          <p className="eyebrow">Inventario</p>
+          <h1 className="display-xl inventory-title">Nuestros vehículos.</h1>
+          <p className="inventory-subtitle tabular">
+            {String(filteredVehicles.length).padStart(2, '0')} de {String(vehicles.length).padStart(2, '0')} vehículos
           </p>
-        </div>
+        </header>
 
         {/* Search Bar */}
         <div className="inventory-search">
