@@ -11,7 +11,7 @@ const Footer = () => {
       <div className="site-footer__inner container">
         <div className="site-footer__brand">
           <img
-            src="/logo-dark.png"
+            src={`${import.meta.env.BASE_URL}logo-dark.png`}
             alt="A2C International"
             className="site-footer__logo"
           />
