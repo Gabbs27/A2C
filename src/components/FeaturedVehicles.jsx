@@ -1,73 +1,72 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import VehicleCard from './VehicleCard'
 import './FeaturedVehicles.css'
 
-const FeaturedVehicles = () => {
+export default function FeaturedVehicles() {
   const [vehicles, setVehicles] = useState([])
   const [exchangeRate, setExchangeRate] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchFeaturedVehicles()
-  }, [])
+    let cancelled = false
 
-  const fetchFeaturedVehicles = async () => {
-    try {
-      const [vehiclesRes, rateRes] = await Promise.all([
-        supabase
-          .from('vehicles')
-          .select('*, vehicle_images(*)')
-          .eq('featured', true)
-          .order('created_at', { ascending: false })
-          .limit(6),
-        supabase
-          .from('exchange_rates')
-          .select('usd_to_dop')
-          .order('updated_at', { ascending: false })
-          .limit(1)
-      ])
-
-      if (vehiclesRes.data) setVehicles(vehiclesRes.data)
-      if (rateRes.data && rateRes.data.length > 0) {
-        setExchangeRate(rateRes.data[0].usd_to_dop)
+    async function load() {
+      try {
+        const [vehiclesRes, rateRes] = await Promise.all([
+          supabase
+            .from('vehicles')
+            .select('*, vehicle_images(*)')
+            .eq('featured', true)
+            .order('created_at', { ascending: false })
+            .limit(5),
+          supabase
+            .from('exchange_rates')
+            .select('usd_to_dop')
+            .order('updated_at', { ascending: false })
+            .limit(1),
+        ])
+        if (cancelled) return
+        if (vehiclesRes.data) setVehicles(vehiclesRes.data)
+        if (rateRes.data?.[0]?.usd_to_dop) {
+          setExchangeRate(rateRes.data[0].usd_to_dop)
+        }
+      } catch (err) {
+        console.error('FeaturedVehicles load error:', err)
+      } finally {
+        if (!cancelled) setLoading(false)
       }
-    } catch (err) {
-      console.error('Error fetching featured vehicles:', err)
-    } finally {
-      setLoading(false)
     }
-  }
+
+    load()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   if (loading || vehicles.length === 0) return null
 
   return (
-    <section className="featured-vehicles">
+    <section className="featured" id="featured" aria-labelledby="featured-title">
       <div className="container">
-        <div className="featured-vehicles__header">
-          <div className="tagline">SELECCION PREMIUM</div>
-          <h2 className="section-title">Vehículos Destacados</h2>
-        </div>
+        <header className="featured__header">
+          <span className="featured__number" aria-hidden="true">01</span>
+          <div>
+            <p className="eyebrow">Inventario destacado</p>
+            <h2 id="featured-title" className="display-xl featured__title">
+              Selección del mes.
+            </h2>
+          </div>
+        </header>
 
-        <div className="featured-vehicles__grid">
-          {vehicles.map(vehicle => (
-            <VehicleCard
-              key={vehicle.id}
-              vehicle={vehicle}
-              exchangeRate={exchangeRate}
-            />
+        <div className="featured__grid">
+          {vehicles.map((v, i) => (
+            <div key={v.id} className={`featured__cell featured__cell--${i}`}>
+              <VehicleCard vehicle={v} exchangeRate={exchangeRate} />
+            </div>
           ))}
-        </div>
-
-        <div className="featured-vehicles__cta">
-          <Link to="/inventario" className="btn btn-primary">
-            Ver Todo el Inventario
-          </Link>
         </div>
       </div>
     </section>
   )
 }
-
-export default FeaturedVehicles
