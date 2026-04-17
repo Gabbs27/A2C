@@ -1,95 +1,153 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
-import { FiPhone, FiMail, FiMapPin, FiFacebook, FiInstagram, FiTwitter } from 'react-icons/fi'
+import { FiInstagram, FiFacebook } from 'react-icons/fi'
+import { FaWhatsapp } from 'react-icons/fa'
 import './Footer.css'
 
 const Footer = () => {
+  const year = new Date().getFullYear()
+
   return (
-    <footer className="footer">
-      <div className="footer-main">
-        <div className="container">
-          <div className="footer-grid">
-            <div className="footer-section">
-              <h3 className="footer-logo">A2C <span>INTERNATIONAL</span></h3>
-              <p className="footer-description">
-                Tu destino para vehículos de lujo y exóticos. Experiencia premium 
-                en cada transacción. SALE AND SERVICES.
-              </p>
-              <div className="social-links">
-                <a href="#" className="social-link" aria-label="Facebook">
-                  <FiFacebook size={20} />
-                </a>
-                <a href="#" className="social-link" aria-label="Instagram">
-                  <FiInstagram size={20} />
-                </a>
-                <a href="#" className="social-link" aria-label="Twitter">
-                  <FiTwitter size={20} />
-                </a>
-              </div>
-            </div>
+    <footer id="contact" className="site-footer">
+      <div className="site-footer__inner container">
+        <div className="site-footer__brand">
+          <img
+            src="/logo-dark.png"
+            alt="A2C International"
+            className="site-footer__logo"
+          />
+        </div>
 
-            <div className="footer-section">
-              <h4 className="footer-title">Enlaces Rápidos</h4>
-              <ul className="footer-links">
-                <li><Link to="/inventario">Inventario</Link></li>
-                <li><a href="#vehicles">Vehículos Eléctricos</a></li>
-                <li><a href="#sell">Vender/Intercambiar</a></li>
-                <li><a href="#finance">Financiamiento</a></li>
-                <li><a href="#service">Servicio</a></li>
-              </ul>
-            </div>
+        <hr className="hairline site-footer__hairline" />
 
-            <div className="footer-section">
-              <h4 className="footer-title">Contacto</h4>
-              <div className="contact-info-footer">
-                <div className="contact-item">
-                  <FiPhone />
-                  <p>Ventas: +1 (829) 447-0259</p>
-                </div>
-                <div className="contact-item">
-                  <FiMail />
-                  <p>info@a2cinternacional.com</p>
-                </div>
-                <div className="contact-item">
-                  <FiMapPin />
-                  <div>
-                    <p>Avenida 6, Santo Domingo 11114</p>
-                    <p>República Dominicana</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div className="site-footer__grid">
+          <div className="site-footer__col">
+            <p className="eyebrow site-footer__eyebrow">Compra</p>
+            <ul className="site-footer__list">
+              <li>
+                <Link to="/inventario" className="site-footer__link">
+                  Inventario
+                </Link>
+              </li>
+              <li>
+                <Link to="/inventario" className="site-footer__link">
+                  Disponibles
+                </Link>
+              </li>
+              <li>
+                <Link to="/comparar" className="site-footer__link">
+                  Comparar
+                </Link>
+              </li>
+            </ul>
+          </div>
 
-            <div className="footer-section">
-              <h4 className="footer-title">Horario</h4>
-              <ul className="hours-list">
-                <li>
-                  <span>Lunes - Viernes:</span>
-                  <span>9:00 AM - 8:00 PM</span>
-                </li>
-                <li>
-                  <span>Sábado:</span>
-                  <span>9:00 AM - 6:00 PM</span>
-                </li>
-                <li>
-                  <span>Domingo:</span>
-                  <span>11:00 AM - 5:00 PM</span>
-                </li>
-              </ul>
-            </div>
+          <div className="site-footer__col">
+            <p className="eyebrow site-footer__eyebrow">Vende</p>
+            <ul className="site-footer__list">
+              <li>
+                <a
+                  href="https://wa.me/18294470259?text=Hola%2C%20quiero%20cotizar%20mi%20veh%C3%ADculo"
+                  className="site-footer__link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Cotiza tu vehículo
+                </a>
+              </li>
+              <li>
+                <a href="#finance" className="site-footer__link">
+                  Financiamiento
+                </a>
+              </li>
+              <li>
+                <a href="#service" className="site-footer__link">
+                  Servicio
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div className="site-footer__col">
+            <p className="eyebrow site-footer__eyebrow">Contacto</p>
+            <ul className="site-footer__list">
+              <li>
+                <span className="site-footer__text">Santo Domingo, R.D.</span>
+              </li>
+              <li>
+                <a href="tel:+18294470259" className="site-footer__link">
+                  +1 (829) 447-0259
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://wa.me/18294470259"
+                  className="site-footer__link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  WhatsApp
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div className="site-footer__col">
+            <p className="eyebrow site-footer__eyebrow">Horarios</p>
+            <ul className="site-footer__list">
+              <li>
+                <span className="site-footer__text">Lun – Vie: 9am – 6pm</span>
+              </li>
+              <li>
+                <span className="site-footer__text">Sáb: 9am – 3pm</span>
+              </li>
+              <li>
+                <span className="site-footer__text">Dom: Cerrado</span>
+              </li>
+            </ul>
           </div>
         </div>
-      </div>
 
-      <div className="footer-bottom">
-        <div className="container">
-          <div className="footer-bottom-content">
-            <p>&copy; 2026 A2C INTERNATIONAL. Todos los derechos reservados.</p>
-            <div className="footer-bottom-links">
-              <a href="#">Política de Privacidad</a>
-              <a href="#">Términos de Servicio</a>
-            </div>
-          </div>
+        <hr className="hairline site-footer__hairline" />
+
+        <div className="site-footer__bottom">
+          <p className="site-footer__copyright">
+            © {year} A2C International · Todos los derechos reservados
+          </p>
+          <ul className="site-footer__social" aria-label="Redes sociales">
+            <li>
+              <a
+                href="https://instagram.com/"
+                className="site-footer__social-link"
+                aria-label="Instagram"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FiInstagram aria-hidden="true" />
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://facebook.com/"
+                className="site-footer__social-link"
+                aria-label="Facebook"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FiFacebook aria-hidden="true" />
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://wa.me/18294470259"
+                className="site-footer__social-link"
+                aria-label="WhatsApp"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaWhatsapp aria-hidden="true" />
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
     </footer>
