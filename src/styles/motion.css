@@ -1,0 +1,69 @@
+/* ═══════════════════════════════════════════════════════════════
+   Motion utilities — reveal, wipe, button arrow
+   Pairs with src/hooks/useIntersection.js for scroll-triggered UI.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── REVEAL (element fades + slides up when visible) ─── */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition:
+    opacity var(--duration-slower) var(--ease-out-expo),
+    transform var(--duration-slower) var(--ease-out-expo);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal.is-visible {
+  /* release GPU promotion once done */
+  will-change: auto;
+}
+
+/* Staggered delays for siblings revealing together */
+.reveal-stagger > *:nth-child(1) { transition-delay: 0ms; }
+.reveal-stagger > *:nth-child(2) { transition-delay: 80ms; }
+.reveal-stagger > *:nth-child(3) { transition-delay: 160ms; }
+.reveal-stagger > *:nth-child(4) { transition-delay: 240ms; }
+.reveal-stagger > *:nth-child(5) { transition-delay: 320ms; }
+.reveal-stagger > *:nth-child(6) { transition-delay: 400ms; }
+
+/* ─── WIPE-IN (for section titles, reveal from bottom-up) ─── */
+@keyframes wipeIn {
+  from { clip-path: inset(100% 0 0 0); }
+  to   { clip-path: inset(0 0 0 0); }
+}
+.wipe-in {
+  animation: wipeIn var(--duration-slower) var(--ease-magazine) both;
+}
+
+/* ─── BUTTON ARROW (slides right on hover/focus) ─── */
+.btn-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.btn-arrow > .arrow {
+  transition: transform var(--duration-fast) var(--ease-out-quart);
+}
+.btn-arrow:hover > .arrow,
+.btn-arrow:focus-visible > .arrow {
+  transform: translateX(4px);
+}
+
+/* ─── Reduced motion: neutralize transforms ─── */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .wipe-in {
+    animation: none !important;
+    clip-path: none !important;
+  }
+  .btn-arrow:hover > .arrow,
+  .btn-arrow:focus-visible > .arrow {
+    transform: none !important;
+  }
+}
