@@ -97,7 +97,7 @@ const Header = () => {
 
         <Link to="/" className="site-header__logo" onClick={closeDrawer}>
           <img
-            src="/logo-dark.png"
+            src={`${import.meta.env.BASE_URL}logo-dark.png`}
             alt=""
             width="160"
             height="48"
