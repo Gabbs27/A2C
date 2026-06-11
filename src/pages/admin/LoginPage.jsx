@@ -1,8 +1,29 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import SEO from '../../components/SEO'
 import './LoginPage.css'
+
+// Mensajes de Supabase llegan en inglés; el panel es en español
+const ERROR_TRANSLATIONS = {
+  'Invalid login credentials': 'Credenciales incorrectas. Verifica tu correo y contraseña.',
+  'Email not confirmed': 'Tu correo aún no está confirmado. Revisa tu bandeja de entrada.',
+  'Too many requests': 'Demasiados intentos. Espera unos minutos e inténtalo de nuevo.',
+  'Network request failed': 'No pudimos conectar con el servidor. Revisa tu conexión.',
+  'Failed to fetch': 'No pudimos conectar con el servidor. Revisa tu conexión.',
+}
+
+const translateError = (message) => {
+  if (!message) return 'Ocurrió un error inesperado. Inténtalo de nuevo.'
+  const match = Object.keys(ERROR_TRANSLATIONS).find((key) =>
+    message.toLowerCase().includes(key.toLowerCase())
+  )
+  if (match) return ERROR_TRANSLATIONS[match]
+  // Los mensajes ya en español (p.ej. backend no configurado) pasan directo
+  return /[áéíóúñ¿]| el | la | de /i.test(message)
+    ? message
+    : 'No pudimos iniciar sesión. Inténtalo de nuevo.'
+}
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -11,10 +32,13 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { user, signIn } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const redirectTo = location.state?.from?.pathname || '/admin'
 
   useEffect(() => {
-    if (user) navigate('/admin', { replace: true })
-  }, [user, navigate])
+    if (user) navigate(redirectTo, { replace: true })
+  }, [user, navigate, redirectTo])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -22,10 +46,10 @@ export default function LoginPage() {
     setIsSubmitting(true)
     const { error: signInError } = await signIn(email, password)
     if (signInError) {
-      setError(signInError.message)
+      setError(translateError(signInError.message))
       setIsSubmitting(false)
     } else {
-      navigate('/admin', { replace: true })
+      navigate(redirectTo, { replace: true })
     }
   }
 
@@ -49,7 +73,7 @@ export default function LoginPage() {
             <input
               id="email"
               type="email"
-              placeholder="admin@a2cinternacional.com"
+              placeholder="admin@a2cinternational.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required

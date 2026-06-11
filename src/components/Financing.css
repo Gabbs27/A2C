@@ -1,0 +1,179 @@
+.financing {
+  padding-block: var(--section-padding-y);
+  background: var(--ink-900);
+  border-block: 1px solid var(--ink-800);
+}
+
+.financing__header {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-6);
+  align-items: start;
+  margin-bottom: var(--space-12);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--ink-800);
+}
+.financing__number {
+  font-family: var(--font-display);
+  font-size: var(--text-display-lg);
+  color: var(--gold-500);
+  line-height: 1;
+  font-variation-settings: 'opsz' 96, 'SOFT' 0;
+}
+.financing__title {
+  color: var(--silver-100);
+  font-weight: 500;
+  font-variation-settings: 'opsz' 96, 'SOFT' 30;
+  margin-top: var(--space-2);
+}
+.financing__title em {
+  font-style: italic;
+  font-variation-settings: 'opsz' 96, 'SOFT' 60;
+  color: var(--gold-500);
+}
+
+.financing__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-10);
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .financing__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-12);
+  }
+}
+
+/* ─── Copy ─── */
+.financing__lead {
+  color: var(--silver-300);
+  font-size: var(--text-body-lg);
+  line-height: var(--leading-relaxed);
+  max-width: 52ch;
+  margin-bottom: var(--space-6);
+}
+.financing__points {
+  list-style: none;
+  margin: 0 0 var(--space-8);
+  padding: 0;
+}
+.financing__points li {
+  display: flex;
+  gap: var(--space-3);
+  color: var(--silver-300);
+  font-size: var(--text-body);
+  line-height: var(--leading-relaxed);
+  padding-block: var(--space-3);
+  border-bottom: 1px solid var(--ink-800);
+}
+.financing__points li:first-child {
+  border-top: 1px solid var(--ink-800);
+}
+.financing__points li::before {
+  content: '—';
+  color: var(--gold-500);
+  flex-shrink: 0;
+}
+.financing__actions {
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+/* ─── Calculadora ─── */
+.financing__calc {
+  border: 1px solid var(--ink-700);
+  background: var(--ink-950);
+  padding: var(--space-6);
+}
+.financing__fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+@media (min-width: 480px) {
+  .financing__fields {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.financing__field label {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: var(--text-ui-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--silver-500);
+  margin-bottom: var(--space-2);
+}
+.financing__field input,
+.financing__field select {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--font-ui);
+  font-size: var(--text-body);
+  font-variant-numeric: tabular-nums;
+  color: var(--silver-100);
+  background: var(--ink-900);
+  border: 1px solid var(--ink-600);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--duration-base) var(--ease-out-quart);
+}
+.financing__field input:hover,
+.financing__field select:hover {
+  border-color: var(--silver-700);
+}
+.financing__field select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%239B9CA3' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-3) center;
+  padding-right: var(--space-8);
+}
+
+.financing__result {
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--ink-700);
+}
+.financing__result-label {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: var(--text-ui-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--silver-500);
+  margin-bottom: var(--space-2);
+}
+.financing__result-value {
+  font-family: var(--font-display);
+  font-size: var(--text-display-lg);
+  font-weight: 500;
+  font-variation-settings: 'opsz' 48, 'SOFT' 0;
+  color: var(--gold-400);
+  line-height: 1.1;
+  margin: 0;
+}
+.financing__result-unit {
+  font-family: var(--font-ui);
+  font-size: var(--text-ui-sm);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--silver-500);
+}
+
+.financing__disclaimer {
+  margin-top: var(--space-4);
+  font-size: var(--text-ui-sm);
+  color: var(--silver-500);
+}
+
+@media (max-width: 768px) {
+  .financing__header {
+    gap: var(--space-4);
+  }
+}

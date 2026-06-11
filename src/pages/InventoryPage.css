@@ -118,24 +118,30 @@
 }
 
 /* ─── Filters panel ─── */
+/* Colapso con grid-template-rows: anima hasta la altura natural
+   en cualquier breakpoint (max-height fijo recortaba en móvil) */
 .inventory-filters {
-  overflow: hidden;
-  max-height: 0;
+  display: grid;
+  grid-template-rows: 0fr;
   opacity: 0;
   visibility: hidden;
   transition:
-    max-height var(--duration-slow) var(--ease-magazine),
+    grid-template-rows var(--duration-slow) var(--ease-magazine),
     opacity var(--duration-base) var(--ease-out-quart),
     visibility 0s linear var(--duration-slow);
 }
 .inventory-filters.open {
-  max-height: 640px;
+  grid-template-rows: 1fr;
   opacity: 1;
   visibility: visible;
   transition:
-    max-height var(--duration-slow) var(--ease-magazine),
+    grid-template-rows var(--duration-slow) var(--ease-magazine),
     opacity var(--duration-base) var(--ease-out-quart),
     visibility 0s linear 0s;
+}
+.inventory-filters__inner {
+  min-height: 0;
+  overflow: hidden;
 }
 .inventory-filters__grid {
   display: grid;
@@ -190,6 +196,8 @@
 
 .inventory-filters__clear {
   margin-top: var(--space-5);
+  /* aire para que el outline de foco no quede recortado por el overflow del panel */
+  margin-bottom: var(--space-2);
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
@@ -251,16 +259,22 @@
 }
 
 /* ─── Compare bar ─── */
+/* La página reserva espacio inferior mientras la barra está montada
+   para que no tape la última fila de tarjetas */
+.inventory-page.has-compare-bar {
+  padding-bottom: calc(var(--section-padding-y) + 96px);
+}
 .inventory-compare-bar {
   position: fixed;
   bottom: var(--space-4);
   left: var(--space-4);
-  right: var(--space-4);
+  /* despeja el FAB de WhatsApp (56px + márgenes) en escritorio */
+  right: calc(var(--space-4) + 88px);
   z-index: 800;
-  animation: compareBarIn var(--duration-slow) var(--ease-magazine);
+  animation: compareBarIn var(--duration-base) var(--ease-out-quart) both;
 }
 @keyframes compareBarIn {
-  from { transform: translateY(120%); opacity: 0; }
+  from { transform: translateY(12px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 .inventory-compare-bar__content {
@@ -336,9 +350,24 @@
     grid-template-columns: 1fr;
     gap: var(--space-6);
   }
+  .inventory-page.has-compare-bar {
+    padding-bottom: calc(var(--section-padding-y) + 260px);
+  }
+  /* Hoja inferior a todo el ancho; el padding inferior deja
+     libre la zona del FAB de WhatsApp (56px + márgenes) */
+  .inventory-compare-bar {
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
   .inventory-compare-bar__content {
     flex-direction: column;
     align-items: stretch;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    padding-bottom: calc(56px + var(--space-6) + var(--space-2));
   }
   .inventory-compare-bar__actions {
     flex-direction: column;

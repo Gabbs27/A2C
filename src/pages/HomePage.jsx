@@ -4,6 +4,7 @@ import Welcome from '../components/Welcome'
 import FeaturedVehicles from '../components/FeaturedVehicles'
 import Services from '../components/Services'
 import Features from '../components/Features'
+import Financing from '../components/Financing'
 import Contact from '../components/Contact'
 
 const HomePage = () => {
@@ -14,6 +15,7 @@ const HomePage = () => {
       <FeaturedVehicles />
       <Services />
       <Features />
+      <Financing />
       <Contact />
     </>
   )

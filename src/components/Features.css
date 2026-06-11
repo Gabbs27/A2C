@@ -49,6 +49,7 @@
   font-weight: 400;
   color: var(--silver-700);
   line-height: 1;
+  font-variation-settings: 'opsz' 48, 'SOFT' 0;
 }
 
 .features__item-title {

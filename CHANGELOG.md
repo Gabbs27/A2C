@@ -1,5 +1,47 @@
 # Changelog - A2C INTERNATIONAL
 
+## Versión 3.0.0 - Junio 2026 (production ready)
+
+### 🏗️ Resiliencia y datos
+- Modo demo automático: si Supabase falta o no responde, la web pública sirve
+  un inventario local de 12 vehículos con nota discreta (`src/lib/api.js` +
+  `src/lib/demoData.js`); el admin muestra aviso de backend no disponible
+- `supabase/seed.sql` para recrear el backend con el mismo inventario
+- Data fetching migrado a TanStack Query con estados de error + reintentar
+- `siteConfig.js`: contacto, horarios y marca con única fuente de verdad
+  (resuelve horarios contradictorios entre Footer/Contact/schema)
+
+### 🎨 Diseño (cierre del refresh 2026 dark editorial)
+- ComparePage, DashboardPage y VehicleFormPage: CSS re-sincronizado con el JSX
+  (antes renderizaban sin estilos)
+- Nueva sección Financiamiento en home con mini-calculadora editorial
+- Página 404 editorial + páginas legales (privacidad, términos)
+- Hero: imágenes self-hosted, control de pausa (WCAG 2.2.2), `100svh`,
+  indicadores con target ≥44px
+- Skeletons fieles a la anatomía real de las cards (sin CLS)
+
+### ⚙️ Funcionalidad
+- Navegación del header funcional desde cualquier ruta (anclas `/#sección`);
+  link "Financiamiento" ya no está muerto
+- Filtro de disponibilidad en inventario; vendidos al final; búsqueda con
+  debounce; selección de comparación persistente (sessionStorage)
+- Galería del detalle: reset al navegar, lightbox con focus-trap y scroll-lock
+- Calculadora de financiamiento: casos borde (0% interés, inicial ≥ precio) y
+  resultado también en DOP
+- Admin: sin límite de 10 vehículos, mutaciones sin recarga de página,
+  confirmación de borrado inline, subida de imágenes con nombres sanitizados
+  y errores visibles, imagen primaria garantizada
+
+### 🚀 Producción
+- Ruta 404 catch-all, scroll restoration global, ErrorBoundary que ya no
+  crashea, guard de env vars sin white-screen
+- SEO por página (title/canonical/OG) + JSON-LD de vehículo; OG estático en
+  index.html para scrapers; favicon real + manifest PWA; sitemap con rutas
+  reales; robots.txt corregido
+- Deploy dual: GH Pages (`/A2C/`) y Vercel (`VITE_BASE_PATH=/`); CSP estricta
+  sin `unsafe-inline` en scripts
+- E2E ampliado (detalle, comparar, 404, móvil) y CI funcional sin secretos
+
 ## Versión 2.0.0 - Diciembre 2025
 
 ### 🎨 Rediseño Completo de Marca

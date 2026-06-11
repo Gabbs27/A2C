@@ -9,7 +9,7 @@ const DEFAULT_OG = '/logo-dark.png'
 export default function SEO({
   title,
   description = DEFAULT_DESC,
-  image = DEFAULT_OG,
+  image,
   url,
   type = 'website',
   jsonLd,
@@ -17,7 +17,12 @@ export default function SEO({
 }) {
   const fullTitle = title ? `${title} · A2C International` : DEFAULT_TITLE
   const fullUrl = url ? `${SITE_URL}${url}` : SITE_URL
-  const fullImage = image?.startsWith('http') ? image : `${SITE_URL}${image}`
+  const resolvedImage = image || DEFAULT_OG
+  const fullImage = resolvedImage.startsWith('http')
+    ? resolvedImage
+    : `${SITE_URL}${resolvedImage}`
+  // El logo cuadrado por defecto no funciona como tarjeta ancha
+  const twitterCard = image ? 'summary_large_image' : 'summary'
 
   return (
     <Helmet>
@@ -37,7 +42,7 @@ export default function SEO({
       <meta property="og:site_name" content="A2C International" />
 
       {/* Twitter */}
-      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:card" content={twitterCard} />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={fullImage} />

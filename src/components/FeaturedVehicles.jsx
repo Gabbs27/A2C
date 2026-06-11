@@ -1,50 +1,21 @@
-import { useEffect, useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { useQuery } from '@tanstack/react-query'
+import { Link } from 'react-router-dom'
+import { fetchFeatured } from '../lib/api'
 import VehicleCard from './VehicleCard'
+import LoadingSkeleton from './LoadingSkeleton'
+import DemoNotice from './DemoNotice'
+import Button from './ui/Button'
 import './FeaturedVehicles.css'
 
+const FEATURED_LIMIT = 5
+
 export default function FeaturedVehicles() {
-  const [vehicles, setVehicles] = useState([])
-  const [exchangeRate, setExchangeRate] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { data, isPending } = useQuery({
+    queryKey: ['featured', FEATURED_LIMIT],
+    queryFn: () => fetchFeatured(FEATURED_LIMIT),
+  })
 
-  useEffect(() => {
-    let cancelled = false
-
-    async function load() {
-      try {
-        const [vehiclesRes, rateRes] = await Promise.all([
-          supabase
-            .from('vehicles')
-            .select('*, vehicle_images(*)')
-            .eq('featured', true)
-            .order('created_at', { ascending: false })
-            .limit(5),
-          supabase
-            .from('exchange_rates')
-            .select('usd_to_dop')
-            .order('updated_at', { ascending: false })
-            .limit(1),
-        ])
-        if (cancelled) return
-        if (vehiclesRes.data) setVehicles(vehiclesRes.data)
-        if (rateRes.data?.[0]?.usd_to_dop) {
-          setExchangeRate(rateRes.data[0].usd_to_dop)
-        }
-      } catch (err) {
-        console.error('FeaturedVehicles load error:', err)
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    load()
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  if (loading || vehicles.length === 0) return null
+  const vehicles = data?.vehicles || []
 
   return (
     <section className="featured" id="featured" aria-labelledby="featured-title">
@@ -59,13 +30,41 @@ export default function FeaturedVehicles() {
           </div>
         </header>
 
-        <div className="featured__grid">
-          {vehicles.map((v, i) => (
-            <div key={v.id} className={`featured__cell featured__cell--${i}`}>
-              <VehicleCard vehicle={v} exchangeRate={exchangeRate} />
+        {isPending ? (
+          <div
+            className="featured__grid"
+            role="status"
+            aria-busy="true"
+            aria-label="Cargando vehículos destacados"
+          >
+            {Array.from({ length: FEATURED_LIMIT }, (_, i) => (
+              <div key={i} className={`featured__cell featured__cell--${i}`}>
+                <LoadingSkeleton />
+              </div>
+            ))}
+          </div>
+        ) : vehicles.length === 0 ? (
+          <div className="featured__empty">
+            <p className="featured__empty-text">
+              Estamos renovando la selección destacada. Mientras tanto, explora
+              todo el inventario disponible.
+            </p>
+            <Button as={Link} to="/inventario" arrow>
+              Ver inventario completo
+            </Button>
+          </div>
+        ) : (
+          <>
+            <div className="featured__grid">
+              {vehicles.map((v, i) => (
+                <div key={v.id} className={`featured__cell featured__cell--${i}`}>
+                  <VehicleCard vehicle={v} exchangeRate={data.exchangeRate} />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+            {data.demo && <DemoNotice />}
+          </>
+        )}
       </div>
     </section>
   )

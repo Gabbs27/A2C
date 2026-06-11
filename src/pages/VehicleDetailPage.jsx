@@ -1,16 +1,18 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import {
   FiCheck, FiFileText, FiClipboard, FiShare2,
   FiPhone, FiChevronLeft, FiChevronRight, FiX,
-  FiMapPin, FiCalendar, FiTag
+  FiMapPin, FiCalendar, FiTag, FiArrowLeft, FiArrowRight
 } from 'react-icons/fi'
-import { supabase } from '../lib/supabase'
+import { fetchVehicleDetail, fetchRelated } from '../lib/api'
+import { PHONE_E164, whatsappLink } from '../lib/siteConfig'
+import { vehicleSchema } from '../lib/schema'
+import SEO from '../components/SEO'
+import DemoNotice from '../components/DemoNotice'
 import VehicleCard from '../components/VehicleCard'
 import './VehicleDetailPage.css'
-
-const WHATSAPP_NUMBER = '18294470259'
-const PHONE_NUMBER = '+18294470259'
 
 const statusLabels = {
   disponible: 'Disponible',
@@ -21,16 +23,43 @@ const statusLabels = {
 const VehicleDetailPage = () => {
   const { id } = useParams()
 
-  const [vehicle, setVehicle] = useState(null)
-  const [images, setImages] = useState([])
-  const [exchangeRate, setExchangeRate] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [notFound, setNotFound] = useState(false)
-  const [relatedVehicles, setRelatedVehicles] = useState([])
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['vehicle', id],
+    queryFn: () => fetchVehicleDetail(id)
+  })
+
+  const vehicle = data?.vehicle || null
+  const exchangeRate = data?.exchangeRate || null
+  const demo = data?.demo || false
+  const notFound = isError || data?.notFound || (!isLoading && !vehicle)
+
+  const { data: relatedData } = useQuery({
+    queryKey: ['related', vehicle?.id],
+    queryFn: () => fetchRelated(vehicle, 4),
+    enabled: Boolean(vehicle)
+  })
+  const relatedVehicles = relatedData?.vehicles || []
+
+  const images = useMemo(
+    () =>
+      [...(vehicle?.vehicle_images || [])].sort(
+        (a, b) => (a.display_order || 0) - (b.display_order || 0)
+      ),
+    [vehicle]
+  )
 
   // Gallery state
   const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
+  const lightboxRef = useRef(null)
+  const lightboxCloseRef = useRef(null)
+  const lastFocusedRef = useRef(null)
+  const swipeStartX = useRef(null)
+  const swipedRef = useRef(false)
+
+  // Share feedback state
+  const [shareFeedback, setShareFeedback] = useState(null)
+  const shareTimerRef = useRef(null)
 
   // Financing calculator state
   const [calcPrice, setCalcPrice] = useState(0)
@@ -39,76 +68,18 @@ const VehicleDetailPage = () => {
   const [termMonths, setTermMonths] = useState(48)
 
   useEffect(() => {
-    fetchVehicle()
-    window.scrollTo(0, 0)
+    setActiveImageIndex(0)
+    setLightboxOpen(false)
   }, [id])
 
-  const fetchVehicle = async () => {
-    setLoading(true)
-    setNotFound(false)
+  useEffect(() => {
+    if (!vehicle) return
+    const price = Number(vehicle.price_usd) || 0
+    setCalcPrice(price)
+    setDownPayment(Math.round(price * 0.2))
+  }, [vehicle])
 
-    try {
-      const [vehicleRes, rateRes] = await Promise.all([
-        supabase
-          .from('vehicles')
-          .select('*, vehicle_images(*)')
-          .eq('id', id)
-          .single(),
-        supabase
-          .from('exchange_rates')
-          .select('usd_to_dop')
-          .order('updated_at', { ascending: false })
-          .limit(1)
-      ])
-
-      if (vehicleRes.error || !vehicleRes.data) {
-        setNotFound(true)
-        setLoading(false)
-        return
-      }
-
-      const vehicleData = vehicleRes.data
-      setVehicle(vehicleData)
-
-      // Sort images by display_order
-      const sortedImages = (vehicleData.vehicle_images || []).sort(
-        (a, b) => (a.display_order || 0) - (b.display_order || 0)
-      )
-      setImages(sortedImages)
-
-      if (rateRes.data && rateRes.data.length > 0) {
-        setExchangeRate(rateRes.data[0].usd_to_dop)
-      }
-
-      // Set calculator defaults
-      const price = vehicleData.price_usd || 0
-      setCalcPrice(price)
-      setDownPayment(Math.round(price * 0.2))
-
-      // Fetch related vehicles
-      fetchRelated(vehicleData)
-    } catch (err) {
-      console.error('Error fetching vehicle:', err)
-      setNotFound(true)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const fetchRelated = async (v) => {
-    try {
-      const { data } = await supabase
-        .from('vehicles')
-        .select('*, vehicle_images(*)')
-        .neq('id', v.id)
-        .or(`brand.eq.${v.brand},body_type.eq.${v.body_type}`)
-        .limit(4)
-
-      if (data) setRelatedVehicles(data)
-    } catch (err) {
-      console.error('Error fetching related:', err)
-    }
-  }
+  useEffect(() => () => clearTimeout(shareTimerRef.current), [])
 
   // Price formatting
   const priceUSD = vehicle?.price_usd
@@ -125,13 +96,19 @@ const VehicleDetailPage = () => {
   // Financing calculator
   const monthlyPayment = useMemo(() => {
     const loanAmount = calcPrice - downPayment
-    if (loanAmount <= 0 || interestRate <= 0 || termMonths <= 0) return null
+    if (loanAmount <= 0 || termMonths <= 0) return null
 
-    const monthlyRate = interestRate / 100 / 12
     const n = termMonths
-    const numerator = monthlyRate * Math.pow(1 + monthlyRate, n)
-    const denominator = Math.pow(1 + monthlyRate, n) - 1
-    const M = loanAmount * (numerator / denominator)
+    let M
+    if (interestRate <= 0) {
+      // 0% de interés: la fórmula estándar dividiría entre cero
+      M = loanAmount / n
+    } else {
+      const monthlyRate = interestRate / 100 / 12
+      const numerator = monthlyRate * Math.pow(1 + monthlyRate, n)
+      const denominator = Math.pow(1 + monthlyRate, n) - 1
+      M = loanAmount * (numerator / denominator)
+    }
 
     return {
       monthly: M,
@@ -139,6 +116,14 @@ const VehicleDetailPage = () => {
       interest: (M * n) - loanAmount
     }
   }, [calcPrice, downPayment, interestRate, termMonths])
+
+  const downCoversPrice = calcPrice > 0 && downPayment >= calcPrice
+
+  const formatUSD = (value) =>
+    value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+  const formatDOP = (value) =>
+    (value * exchangeRate).toLocaleString('en-US', { maximumFractionDigits: 0 })
 
   // Gallery navigation
   const nextImage = () => {
@@ -149,7 +134,49 @@ const VehicleDetailPage = () => {
     setActiveImageIndex(prev => (prev - 1 + images.length) % images.length)
   }
 
+  const handleGalleryKey = (e) => {
+    if (images.length < 2) return
+    if (e.key === 'ArrowRight') {
+      e.preventDefault()
+      nextImage()
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault()
+      prevImage()
+    }
+  }
+
+  // Swipe táctil: un deslizamiento horizontal cambia de imagen y no abre el lightbox
+  const handleGalleryPointerDown = (e) => {
+    swipeStartX.current = e.clientX
+    swipedRef.current = false
+  }
+
+  const handleGalleryPointerUp = (e) => {
+    if (swipeStartX.current == null) return
+    const deltaX = e.clientX - swipeStartX.current
+    swipeStartX.current = null
+    if (Math.abs(deltaX) > 40 && images.length > 1) {
+      swipedRef.current = true
+      if (deltaX < 0) nextImage()
+      else prevImage()
+    }
+  }
+
+  const handleGalleryClick = () => {
+    if (swipedRef.current) {
+      swipedRef.current = false
+      return
+    }
+    setLightboxOpen(true)
+  }
+
   // Share
+  const showShareFeedback = (state) => {
+    setShareFeedback(state)
+    clearTimeout(shareTimerRef.current)
+    shareTimerRef.current = setTimeout(() => setShareFeedback(null), 2000)
+  }
+
   const handleShare = async () => {
     const url = window.location.href
     if (navigator.share) {
@@ -162,22 +189,43 @@ const VehicleDetailPage = () => {
       } catch (err) {
         // User cancelled
       }
-    } else {
-      try {
-        await navigator.clipboard.writeText(url)
-        alert('Enlace copiado al portapapeles')
-      } catch (err) {
-        // Fallback
-      }
+      return
+    }
+    try {
+      await navigator.clipboard.writeText(url)
+      showShareFeedback('copied')
+    } catch (err) {
+      showShareFeedback('error')
     }
   }
 
-  // WhatsApp link
+  // WhatsApp links
   const whatsappUrl = vehicle
-    ? `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    ? whatsappLink(
         `Hola, me interesa el ${vehicle.brand} ${vehicle.model} ${vehicle.year} que vi en su página web. ¿Está disponible?`
-      )}`
-    : '#'
+      )
+    : whatsappLink()
+
+  const askPriceUrl = vehicle
+    ? whatsappLink(
+        `Hola, quisiera consultar el precio del ${vehicle.brand} ${vehicle.model} ${vehicle.year} que vi en su página web.`
+      )
+    : whatsappLink()
+
+  // Scroll-lock + foco al abrir el lightbox; restaura ambos al cerrar
+  useEffect(() => {
+    if (!lightboxOpen) return
+    lastFocusedRef.current = document.activeElement
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    lightboxCloseRef.current?.focus()
+    return () => {
+      document.body.style.overflow = prevOverflow
+      if (lastFocusedRef.current instanceof HTMLElement) {
+        lastFocusedRef.current.focus()
+      }
+    }
+  }, [lightboxOpen])
 
   // Keyboard nav for lightbox
   useEffect(() => {
@@ -186,6 +234,23 @@ const VehicleDetailPage = () => {
       if (e.key === 'ArrowRight') nextImage()
       else if (e.key === 'ArrowLeft') prevImage()
       else if (e.key === 'Escape') setLightboxOpen(false)
+      else if (e.key === 'Tab') {
+        // Focus trap simple: Tab cicla entre los controles del diálogo
+        const focusables = lightboxRef.current?.querySelectorAll('button')
+        if (!focusables?.length) return
+        const first = focusables[0]
+        const last = focusables[focusables.length - 1]
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        } else if (!lightboxRef.current.contains(document.activeElement)) {
+          e.preventDefault()
+          first.focus()
+        }
+      }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
@@ -208,7 +273,17 @@ const VehicleDetailPage = () => {
     { label: 'VIN', value: vehicle.vin }
   ].filter(s => s.value) : []
 
-  if (loading) {
+  const seoDescription = vehicle
+    ? [
+        `${vehicle.brand} ${vehicle.model} ${vehicle.year} en A2C International, Santo Domingo.`,
+        vehicle.mileage ? `${Number(vehicle.mileage).toLocaleString('en-US')} km.` : null,
+        vehicle.transmission ? `Transmisión ${vehicle.transmission}.` : null,
+        vehicle.fuel_type ? `Combustible ${vehicle.fuel_type}.` : null,
+        priceUSD ? `Precio: US$ ${priceUSD}.` : 'Precio a consultar.'
+      ].filter(Boolean).join(' ')
+    : null
+
+  if (isLoading) {
     return (
       <div className="detail-page">
         <div className="container">
@@ -224,6 +299,7 @@ const VehicleDetailPage = () => {
   if (notFound) {
     return (
       <div className="detail-page">
+        <SEO title="Vehículo no encontrado" noIndex />
         <div className="container">
           <div className="detail-not-found">
             <h2>Veh&iacute;culo no encontrado</h2>
@@ -239,28 +315,52 @@ const VehicleDetailPage = () => {
 
   return (
     <div className="detail-page">
+      <SEO
+        title={`${vehicle.brand} ${vehicle.model} ${vehicle.year}`}
+        description={seoDescription}
+        url={`/vehiculo/${id}`}
+        image={images[0]?.image_url}
+        type="product"
+        jsonLd={vehicleSchema(vehicle)}
+      />
       <div className="container">
         {/* Breadcrumb */}
-        <div className="detail-breadcrumb">
-          <Link to="/inventario">Inventario</Link>
-          <span>/</span>
+        <nav className="detail-breadcrumb" aria-label="Ruta de navegación">
+          <Link to="/inventario" className="detail-breadcrumb__back">
+            <FiArrowLeft size={14} aria-hidden="true" />
+            Volver al inventario
+          </Link>
+          <span aria-hidden="true">/</span>
           <span>{vehicle.brand} {vehicle.model} {vehicle.year}</span>
-        </div>
+        </nav>
+
+        {demo && <DemoNotice />}
 
         {/* Top section: Gallery + Info */}
         <div className="detail-top">
           {/* Gallery */}
           <div className="detail-gallery">
-            <div
-              className="detail-gallery__main"
-              onClick={() => images.length > 0 && setLightboxOpen(true)}
-            >
+            <div className="detail-gallery__main">
               {images.length > 0 ? (
-                <img
-                  src={images[activeImageIndex]?.image_url}
-                  alt={`${vehicle.brand} ${vehicle.model}`}
-                  className="detail-gallery__main-img"
-                />
+                <button
+                  type="button"
+                  className="detail-gallery__zoom"
+                  onClick={handleGalleryClick}
+                  onKeyDown={handleGalleryKey}
+                  onPointerDown={handleGalleryPointerDown}
+                  onPointerUp={handleGalleryPointerUp}
+                  aria-label={
+                    images.length > 1
+                      ? `Ampliar imagen ${activeImageIndex + 1} de ${images.length}. Usa las flechas para cambiar de imagen`
+                      : 'Ampliar imagen'
+                  }
+                >
+                  <img
+                    src={images[activeImageIndex]?.image_url}
+                    alt={`${vehicle.brand} ${vehicle.model}`}
+                    className="detail-gallery__main-img"
+                  />
+                </button>
               ) : (
                 <div className="detail-gallery__placeholder">
                   <span>Sin im&aacute;genes disponibles</span>
@@ -271,7 +371,7 @@ const VehicleDetailPage = () => {
                   <button
                     type="button"
                     className="detail-gallery__nav detail-gallery__nav--prev"
-                    onClick={(e) => { e.stopPropagation(); prevImage() }}
+                    onClick={prevImage}
                     aria-label="Imagen anterior"
                   >
                     <FiChevronLeft size={24} aria-hidden="true" />
@@ -279,7 +379,7 @@ const VehicleDetailPage = () => {
                   <button
                     type="button"
                     className="detail-gallery__nav detail-gallery__nav--next"
-                    onClick={(e) => { e.stopPropagation(); nextImage() }}
+                    onClick={nextImage}
                     aria-label="Siguiente imagen"
                   >
                     <FiChevronRight size={24} aria-hidden="true" />
@@ -333,11 +433,23 @@ const VehicleDetailPage = () => {
             </div>
 
             <div className="detail-info__pricing">
-              {priceUSD && (
-                <span className="detail-info__price-usd">${priceUSD}</span>
-              )}
-              {priceDOP && (
-                <span className="detail-info__price-dop">&asymp; RD$ {priceDOP}</span>
+              {priceUSD ? (
+                <>
+                  <span className="detail-info__price-usd">${priceUSD}</span>
+                  {priceDOP && (
+                    <span className="detail-info__price-dop">&asymp; RD$ {priceDOP}</span>
+                  )}
+                </>
+              ) : (
+                <a
+                  href={askPriceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="detail-info__price-ask"
+                >
+                  Consultar precio
+                  <FiArrowRight size={18} aria-hidden="true" />
+                </a>
               )}
             </div>
 
@@ -372,7 +484,7 @@ const VehicleDetailPage = () => {
                 Preguntar por WhatsApp
               </a>
               <a
-                href={`tel:${PHONE_NUMBER}`}
+                href={`tel:${PHONE_E164}`}
                 className="detail-actions__btn detail-actions__btn--call"
               >
                 <FiPhone size={16} />
@@ -381,10 +493,22 @@ const VehicleDetailPage = () => {
               <button
                 type="button"
                 onClick={handleShare}
-                className="detail-actions__btn detail-actions__btn--share"
+                className={`detail-actions__btn detail-actions__btn--share${shareFeedback === 'copied' ? ' is-copied' : ''}`}
+                aria-live="polite"
               >
-                <FiShare2 size={16} aria-hidden="true" />
-                Compartir
+                {shareFeedback === 'copied' ? (
+                  <>
+                    <FiCheck size={16} aria-hidden="true" />
+                    Enlace copiado
+                  </>
+                ) : shareFeedback === 'error' ? (
+                  'No se pudo copiar'
+                ) : (
+                  <>
+                    <FiShare2 size={16} aria-hidden="true" />
+                    Compartir
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -471,6 +595,9 @@ const VehicleDetailPage = () => {
                   type="number"
                   value={downPayment}
                   onChange={(e) => setDownPayment(Number(e.target.value))}
+                  onBlur={() => {
+                    if (calcPrice > 0 && downPayment > calcPrice) setDownPayment(calcPrice)
+                  }}
                   min="0"
                   step="100"
                 />
@@ -502,28 +629,49 @@ const VehicleDetailPage = () => {
               </div>
             </div>
 
-            {monthlyPayment && (
+            {monthlyPayment ? (
               <div className="detail-calculator__results">
                 <div className="detail-calculator__result detail-calculator__result--highlight">
                   <span className="detail-calculator__result-label">Cuota Mensual</span>
                   <span className="detail-calculator__result-value">
-                    ${monthlyPayment.monthly.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ${formatUSD(monthlyPayment.monthly)}
                   </span>
+                  {exchangeRate && (
+                    <span className="detail-calculator__result-dop">
+                      &asymp; RD$ {formatDOP(monthlyPayment.monthly)} /mes
+                    </span>
+                  )}
                 </div>
                 <div className="detail-calculator__result">
                   <span className="detail-calculator__result-label">Total a Pagar</span>
                   <span className="detail-calculator__result-value">
-                    ${monthlyPayment.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ${formatUSD(monthlyPayment.total)}
                   </span>
+                  {exchangeRate && (
+                    <span className="detail-calculator__result-dop">
+                      &asymp; RD$ {formatDOP(monthlyPayment.total)}
+                    </span>
+                  )}
                 </div>
                 <div className="detail-calculator__result">
                   <span className="detail-calculator__result-label">Total Intereses</span>
                   <span className="detail-calculator__result-value">
-                    ${monthlyPayment.interest.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ${formatUSD(monthlyPayment.interest)}
                   </span>
+                  {exchangeRate && (
+                    <span className="detail-calculator__result-dop">
+                      &asymp; RD$ {formatDOP(monthlyPayment.interest)}
+                    </span>
+                  )}
                 </div>
               </div>
-            )}
+            ) : downCoversPrice ? (
+              <div className="detail-calculator__results">
+                <p className="detail-calculator__note">
+                  No necesitas financiamiento: el inicial cubre el precio total del veh&iacute;culo.
+                </p>
+              </div>
+            ) : null}
           </div>
         </section>
 
@@ -547,6 +695,7 @@ const VehicleDetailPage = () => {
       {/* Lightbox */}
       {lightboxOpen && images.length > 0 && (
         <div
+          ref={lightboxRef}
           className="detail-lightbox"
           onClick={() => setLightboxOpen(false)}
           role="dialog"
@@ -554,6 +703,7 @@ const VehicleDetailPage = () => {
           aria-label={`Galería de ${vehicle.brand} ${vehicle.model}`}
         >
           <button
+            ref={lightboxCloseRef}
             type="button"
             className="detail-lightbox__close"
             onClick={() => setLightboxOpen(false)}

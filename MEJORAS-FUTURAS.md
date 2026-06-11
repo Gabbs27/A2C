@@ -10,13 +10,13 @@
 - Alt text en imágenes necesarias
 
 ### Pendiente 📝
-- [ ] Agregar Schema.org markup para negocio local
-- [ ] Crear sitemap.xml
-- [ ] Agregar robots.txt
-- [ ] Open Graph tags para redes sociales
-- [ ] Twitter Card tags
-- [ ] Favicon personalizado
-- [ ] PWA (Progressive Web App) con manifest.json
+- [x] Agregar Schema.org markup para negocio local (AutoDealer + Car por vehículo)
+- [x] Crear sitemap.xml (rutas reales, sin /404 ni /admin)
+- [x] Agregar robots.txt
+- [x] Open Graph tags para redes sociales (estáticos + por página)
+- [x] Twitter Card tags
+- [x] Favicon personalizado (desde el logo)
+- [x] PWA básica con manifest.webmanifest
 - [ ] Service Worker para cache
 
 #### Ejemplo de Schema.org para Local Business:
@@ -68,15 +68,18 @@
 
 ### Pendiente
 - [ ] Formulario de contacto funcional (EmailJS o backend)
-- [ ] Sistema de búsqueda de inventario
-- [ ] Filtros de vehículos (marca, precio, año, etc.)
+- [x] Sistema de búsqueda de inventario (con debounce y URL state)
+- [x] Filtros de vehículos (marca, precio, año, carrocería, combustible, disponibilidad)
 - [ ] Chat en vivo (Tawk.to, Intercom, etc.)
 - [ ] Newsletter subscription
-- [ ] Calculadora de financiamiento
+- [x] Calculadora de financiamiento (detalle + sección home)
 - [ ] Sistema de citas online para servicio
-- [ ] Integración con WhatsApp Business
-- [ ] Comparador de vehículos
+- [x] Integración con WhatsApp (CTAs contextuales por vehículo)
+- [x] Comparador de vehículos (hasta 3, persistente en la sesión)
 - [ ] Guardar favoritos (Local Storage)
+- [ ] Lint/format gate en CI (ESLint + Prettier)
+- [ ] Monitoreo de errores en producción (Sentry o similar)
+- [ ] Paginación de inventario cuando supere ~50 unidades
 
 ## 📱 Mobile
 

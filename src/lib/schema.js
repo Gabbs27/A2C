@@ -1,40 +1,35 @@
-const SITE_URL = 'https://a2cinternational.com'
+import {
+  SITE_NAME,
+  PHONE_E164,
+  ADDRESS,
+  HOURS_SCHEMA,
+} from './siteConfig'
+
+// Dominio canónico. En despliegues alternativos definir VITE_SITE_URL.
+const SITE_URL = (
+  import.meta.env.VITE_SITE_URL || 'https://a2cinternational.com'
+).replace(/\/$/, '')
 
 export function autoDealerSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'AutoDealer',
-    name: 'A2C International',
+    name: SITE_NAME,
     url: SITE_URL,
     image: `${SITE_URL}/logo-dark.png`,
-    telephone: '+18294470259',
+    telephone: PHONE_E164,
+    priceRange: '$$$',
     address: {
       '@type': 'PostalAddress',
-      addressCountry: 'DO',
-      addressLocality: 'Santo Domingo',
-      streetAddress: 'Avenida 6',
-      postalCode: '11114',
+      addressCountry: ADDRESS.country,
+      addressLocality: ADDRESS.locality,
+      streetAddress: ADDRESS.street,
+      postalCode: ADDRESS.postalCode,
     },
-    openingHoursSpecification: [
-      {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        opens: '09:00',
-        closes: '20:00',
-      },
-      {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: 'Saturday',
-        opens: '09:00',
-        closes: '18:00',
-      },
-      {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: 'Sunday',
-        opens: '11:00',
-        closes: '17:00',
-      },
-    ],
+    openingHoursSpecification: HOURS_SCHEMA.map((spec) => ({
+      '@type': 'OpeningHoursSpecification',
+      ...spec,
+    })),
   }
 }
 
@@ -44,9 +39,14 @@ export function vehicleSchema(vehicle) {
     '@context': 'https://schema.org',
     '@type': 'Car',
     name: `${vehicle.year} ${vehicle.brand} ${vehicle.model}`,
+    url: `${SITE_URL}/vehiculo/${vehicle.id}`,
     brand: { '@type': 'Brand', name: vehicle.brand },
     model: vehicle.model,
     vehicleModelDate: vehicle.year,
+    itemCondition:
+      vehicle.condition?.toLowerCase() === 'nuevo'
+        ? 'https://schema.org/NewCondition'
+        : 'https://schema.org/UsedCondition',
     ...(vehicle.mileage
       ? {
           mileageFromOdometer: {
@@ -61,18 +61,27 @@ export function vehicleSchema(vehicle) {
     ...(vehicle.transmission ? { vehicleTransmission: vehicle.transmission } : {}),
     ...(vehicle.body_type ? { bodyType: vehicle.body_type } : {}),
     ...(vehicle.vin ? { vehicleIdentificationNumber: vehicle.vin } : {}),
-    offers: {
-      '@type': 'Offer',
-      price: vehicle.price_usd,
-      priceCurrency: 'USD',
-      availability:
-        vehicle.status === 'disponible'
-          ? 'https://schema.org/InStock'
-          : vehicle.status === 'reservado'
-          ? 'https://schema.org/PreOrder'
-          : 'https://schema.org/SoldOut',
-      seller: { '@type': 'AutoDealer', name: 'A2C International' },
-    },
+    ...(vehicle.price_usd
+      ? {
+          offers: {
+            '@type': 'Offer',
+            price: vehicle.price_usd,
+            priceCurrency: 'USD',
+            url: `${SITE_URL}/vehiculo/${vehicle.id}`,
+            itemCondition:
+              vehicle.condition?.toLowerCase() === 'nuevo'
+                ? 'https://schema.org/NewCondition'
+                : 'https://schema.org/UsedCondition',
+            availability:
+              vehicle.status === 'disponible'
+                ? 'https://schema.org/InStock'
+                : vehicle.status === 'reservado'
+                ? 'https://schema.org/PreOrder'
+                : 'https://schema.org/SoldOut',
+            seller: { '@type': 'AutoDealer', name: SITE_NAME },
+          },
+        }
+      : {}),
     ...(vehicle.vehicle_images?.[0]?.image_url
       ? { image: vehicle.vehicle_images[0].image_url }
       : {}),

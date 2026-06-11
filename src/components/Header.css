@@ -111,6 +111,14 @@
   width: 100%;
 }
 
+.site-header__nav-link.is-active {
+  color: var(--silver-100);
+}
+
+.site-header__nav-link.is-active::after {
+  width: 100%;
+}
+
 /* ─── Mobile drawer (top-down) ─── */
 .site-header__drawer {
   position: absolute;
@@ -123,15 +131,19 @@
   transform: translateY(-100%);
   opacity: 0;
   pointer-events: none;
+  visibility: hidden;
   transition:
     transform var(--duration-slow) var(--ease-magazine),
-    opacity var(--duration-slow) var(--ease-magazine);
+    opacity var(--duration-slow) var(--ease-magazine),
+    visibility 0s linear var(--duration-slow);
 }
 
 .site-header__drawer[data-open='true'] {
   transform: translateY(0);
   opacity: 1;
   pointer-events: auto;
+  visibility: visible;
+  transition-delay: 0s;
 }
 
 .site-header__drawer-nav {
@@ -156,7 +168,8 @@
 }
 
 .site-header__drawer-link:hover,
-.site-header__drawer-link:focus-visible {
+.site-header__drawer-link:focus-visible,
+.site-header__drawer-link.is-active {
   color: var(--gold-500);
 }
 

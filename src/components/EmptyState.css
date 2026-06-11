@@ -10,9 +10,20 @@
   margin-inline: auto;
 }
 
+.empty-state::before {
+  content: '';
+  width: var(--space-10);
+  height: 1px;
+  background: var(--ink-600);
+}
+
 .empty-state__icon {
   color: var(--silver-500);
   margin-bottom: var(--space-2);
+}
+
+.empty-state__eyebrow {
+  margin-bottom: calc(-1 * var(--space-2));
 }
 
 .empty-state__title {
@@ -29,4 +40,10 @@
   font-size: var(--text-body);
   line-height: var(--leading-relaxed);
   margin-bottom: var(--space-3);
+}
+
+/* Variante de error (fallo de carga, no "sin resultados") */
+.empty-state--error .empty-state__icon,
+.empty-state--error .empty-state__eyebrow {
+  color: var(--danger);
 }

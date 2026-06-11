@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { FaWhatsapp } from 'react-icons/fa'
 import { useReducedMotion } from '../hooks/useReducedMotion'
+import { SITE_NAME, whatsappLink } from '../lib/siteConfig'
 import './WhatsAppButton.css'
 
-const WHATSAPP_URL =
-  'https://wa.me/18294470259?text=Hola,%20me%20interesa%20obtener%20informaci%C3%B3n%20sobre%20sus%20veh%C3%ADculos.'
+const WHATSAPP_URL = whatsappLink(
+  'Hola, me interesa obtener información sobre sus vehículos.'
+)
 const IDLE_MS = 5000
 
 export default function WhatsAppButton() {
@@ -44,7 +46,7 @@ export default function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       className={`wa-btn ${attention ? 'is-attention' : ''} ${collapsed ? 'is-collapsed' : ''}`}
-      aria-label="Contactar por WhatsApp"
+      aria-label={`Abrir chat de WhatsApp con ${SITE_NAME}`}
     >
       <FaWhatsapp aria-hidden="true" />
     </a>

@@ -1,9 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FiArrowRight } from 'react-icons/fi'
+import { FiArrowRight, FiPause, FiPlay } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
 import { useReducedMotion } from '../hooks/useReducedMotion'
+import { whatsappLink } from '../lib/siteConfig'
 import './Hero.css'
+
+const BASE = import.meta.env.BASE_URL
 
 const SLIDES = [
   {
@@ -11,28 +14,28 @@ const SLIDES = [
     prefix: 'Lujo,',
     emphasis: 'exótico,',
     suffix: 'y mucho más.',
-    image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1800&q=80',
+    image: `${BASE}hero/slide-1.jpg`,
   },
   {
     eyebrow: 'Potencia y elegancia',
     prefix: 'Performance',
     emphasis: 'alemán,',
     suffix: 'precisión pura.',
-    image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1800&q=80',
+    image: `${BASE}hero/slide-2.jpg`,
   },
   {
     eyebrow: 'Herencia deportiva',
     prefix: 'Conducción',
     emphasis: 'excepcional,',
     suffix: 'sin compromisos.',
-    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1800&q=80',
+    image: `${BASE}hero/slide-3.jpg`,
   },
   {
     eyebrow: 'Aventura sin límites',
     prefix: 'Versatilidad',
     emphasis: 'británica,',
     suffix: 'confort extremo.',
-    image: 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=1800&q=80',
+    image: `${BASE}hero/slide-4.jpg`,
   },
 ]
 
@@ -40,25 +43,34 @@ const AUTOPLAY_MS = 7000
 
 export default function Hero() {
   const [idx, setIdx] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const [hovered, setHovered] = useState(false)
+  // Solo se montan los fondos ya visitados + el siguiente: evita bajar
+  // las 4 imágenes en el primer paint (LCP móvil)
+  const [loadedSlides, setLoadedSlides] = useState(() => new Set([0, 1]))
   const reduced = useReducedMotion()
-  const timerRef = useRef(null)
+
+  // Re-crear el timer cuando cambia idx reinicia el autoplay tras navegación manual
+  useEffect(() => {
+    if (reduced || paused || hovered) return undefined
+    const timer = setTimeout(() => {
+      setIdx((i) => (i + 1) % SLIDES.length)
+    }, AUTOPLAY_MS)
+    return () => clearTimeout(timer)
+  }, [idx, paused, hovered, reduced])
 
   useEffect(() => {
-    if (reduced) return undefined
-    timerRef.current = setInterval(() => {
-      setIdx((i) => (i + 1) % SLIDES.length)
-    }, AUTOPLAY_MS)
-    return () => clearInterval(timerRef.current)
-  }, [reduced])
-
-  const pause = () => clearInterval(timerRef.current)
-  const resume = () => {
-    if (reduced) return
-    pause()
-    timerRef.current = setInterval(() => {
-      setIdx((i) => (i + 1) % SLIDES.length)
-    }, AUTOPLAY_MS)
-  }
+    const nextIdx = (idx + 1) % SLIDES.length
+    const next = new Image()
+    next.src = SLIDES[nextIdx].image
+    setLoadedSlides((prev) => {
+      if (prev.has(idx) && prev.has(nextIdx)) return prev
+      const merged = new Set(prev)
+      merged.add(idx)
+      merged.add(nextIdx)
+      return merged
+    })
+  }, [idx])
 
   const active = SLIDES[idx]
 
@@ -67,14 +79,22 @@ export default function Hero() {
       className="hero"
       aria-roledescription="carousel"
       aria-label="Vehículos destacados"
-      onMouseEnter={pause}
-      onMouseLeave={resume}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocus={() => setHovered(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget)) setHovered(false)
+      }}
     >
       {SLIDES.map((slide, i) => (
         <div
           key={i}
           className={`hero__slide ${i === idx ? 'is-active' : ''}`}
-          style={{ backgroundImage: `url(${slide.image})` }}
+          style={
+            loadedSlides.has(i)
+              ? { backgroundImage: `url(${slide.image})` }
+              : undefined
+          }
           role="group"
           aria-roledescription="slide"
           aria-label={`${i + 1} de ${SLIDES.length}`}
@@ -84,19 +104,21 @@ export default function Hero() {
       <div className="hero__overlay" aria-hidden="true" />
 
       <div className="container hero__content">
-        <p className="eyebrow hero__eyebrow">{active.eyebrow}</p>
-        <h1 className="display-2xl hero__title" key={idx}>
-          {active.prefix} <em>{active.emphasis}</em>
-          <br />
-          {active.suffix}
-        </h1>
+        <div className="hero__headline" key={idx}>
+          <p className="eyebrow hero__eyebrow">{active.eyebrow}</p>
+          <h1 className="display-2xl hero__title">
+            {active.prefix} <em>{active.emphasis}</em>
+            <br />
+            {active.suffix}
+          </h1>
+        </div>
         <div className="hero__actions">
           <Link to="/inventario" className="btn btn--primary btn--lg btn-arrow">
             <span>Explorar inventario</span>
             <FiArrowRight className="arrow" aria-hidden="true" />
           </Link>
           <a
-            href="https://wa.me/18294470259?text=Hola,%20me%20interesa%20vender%20mi%20veh%C3%ADculo"
+            href={whatsappLink('Hola, me interesa vender mi vehículo')}
             className="btn btn--ghost btn--lg"
             target="_blank"
             rel="noopener noreferrer"
@@ -109,6 +131,21 @@ export default function Hero() {
       </div>
 
       <div className="hero__indicators" aria-label="Navegación de slides">
+        <button
+          type="button"
+          className="hero__playpause"
+          onClick={() => setPaused((p) => !p)}
+          aria-pressed={paused}
+          aria-label={
+            paused ? 'Reanudar rotación automática' : 'Pausar rotación automática'
+          }
+        >
+          {paused ? (
+            <FiPlay aria-hidden="true" />
+          ) : (
+            <FiPause aria-hidden="true" />
+          )}
+        </button>
         {SLIDES.map((_, i) => (
           <button
             key={i}
@@ -117,7 +154,9 @@ export default function Hero() {
             onClick={() => setIdx(i)}
             aria-label={`Ir al slide ${i + 1}`}
             aria-current={i === idx}
-          />
+          >
+            <span className="hero__indicator-dot" aria-hidden="true" />
+          </button>
         ))}
         <span className="hero__counter">
           <span className="tabular">{String(idx + 1).padStart(2, '0')}</span>

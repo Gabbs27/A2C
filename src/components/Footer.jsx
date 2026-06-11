@@ -1,6 +1,14 @@
 import { Link } from 'react-router-dom'
-import { FiInstagram, FiFacebook } from 'react-icons/fi'
 import { FaWhatsapp } from 'react-icons/fa'
+import {
+  SITE_NAME,
+  PHONE_E164,
+  PHONE_DISPLAY,
+  EMAIL,
+  ADDRESS,
+  HOURS,
+  whatsappLink,
+} from '../lib/siteConfig'
 import './Footer.css'
 
 const Footer = () => {
@@ -12,7 +20,7 @@ const Footer = () => {
         <div className="site-footer__brand">
           <img
             src={`${import.meta.env.BASE_URL}logo-dark.png`}
-            alt="A2C International"
+            alt={SITE_NAME}
             className="site-footer__logo"
           />
         </div>
@@ -29,11 +37,6 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/inventario" className="site-footer__link">
-                  Disponibles
-                </Link>
-              </li>
-              <li>
                 <Link to="/comparar" className="site-footer__link">
                   Comparar
                 </Link>
@@ -46,7 +49,7 @@ const Footer = () => {
             <ul className="site-footer__list">
               <li>
                 <a
-                  href="https://wa.me/18294470259?text=Hola%2C%20quiero%20cotizar%20mi%20veh%C3%ADculo"
+                  href={whatsappLink('Hola, quiero cotizar mi vehículo')}
                   className="site-footer__link"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -55,14 +58,14 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="#finance" className="site-footer__link">
+                <Link to="/#financiamiento" className="site-footer__link">
                   Financiamiento
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#service" className="site-footer__link">
+                <Link to="/#servicios" className="site-footer__link">
                   Servicio
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -71,21 +74,26 @@ const Footer = () => {
             <p className="eyebrow site-footer__eyebrow">Contacto</p>
             <ul className="site-footer__list">
               <li>
-                <span className="site-footer__text">Santo Domingo, R.D.</span>
+                <span className="site-footer__text">{ADDRESS.short}</span>
               </li>
               <li>
-                <a href="tel:+18294470259" className="site-footer__link">
-                  +1 (829) 447-0259
+                <a href={`tel:${PHONE_E164}`} className="site-footer__link">
+                  {PHONE_DISPLAY}
                 </a>
               </li>
               <li>
                 <a
-                  href="https://wa.me/18294470259"
+                  href={whatsappLink()}
                   className="site-footer__link"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   WhatsApp
+                </a>
+              </li>
+              <li>
+                <a href={`mailto:${EMAIL}`} className="site-footer__link">
+                  {EMAIL}
                 </a>
               </li>
             </ul>
@@ -94,15 +102,13 @@ const Footer = () => {
           <div className="site-footer__col">
             <p className="eyebrow site-footer__eyebrow">Horarios</p>
             <ul className="site-footer__list">
-              <li>
-                <span className="site-footer__text">Lun – Vie: 9am – 6pm</span>
-              </li>
-              <li>
-                <span className="site-footer__text">Sáb: 9am – 3pm</span>
-              </li>
-              <li>
-                <span className="site-footer__text">Dom: Cerrado</span>
-              </li>
+              {HOURS.map((slot) => (
+                <li key={slot.days}>
+                  <span className="site-footer__text">
+                    {slot.days}: {slot.opens} – {slot.closes}
+                  </span>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
@@ -111,34 +117,20 @@ const Footer = () => {
 
         <div className="site-footer__bottom">
           <p className="site-footer__copyright">
-            © {year} A2C International · Todos los derechos reservados
+            © {year} {SITE_NAME} · Todos los derechos reservados
           </p>
+          <nav className="site-footer__legal" aria-label="Legal">
+            <Link to="/privacidad" className="site-footer__legal-link">
+              Privacidad
+            </Link>
+            <Link to="/terminos" className="site-footer__legal-link">
+              Términos
+            </Link>
+          </nav>
           <ul className="site-footer__social" aria-label="Redes sociales">
             <li>
               <a
-                href="https://instagram.com/"
-                className="site-footer__social-link"
-                aria-label="Instagram"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FiInstagram aria-hidden="true" />
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://facebook.com/"
-                className="site-footer__social-link"
-                aria-label="Facebook"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FiFacebook aria-hidden="true" />
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://wa.me/18294470259"
+                href={whatsappLink()}
                 className="site-footer__social-link"
                 aria-label="WhatsApp"
                 target="_blank"
