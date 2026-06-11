@@ -160,6 +160,17 @@
   color: var(--silver-500);
   font-family: var(--font-ui);
 }
+/* Sin price_usd: ocupa el slot del precio para alinear la altura de las cards */
+.v-card__price--consult {
+  font-size: var(--text-h3);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--silver-300);
+  font-variation-settings: 'opsz' 36, 'SOFT' 30;
+  display: flex;
+  align-items: center;
+  min-height: var(--text-display-lg);
+}
 
 .v-card__divider {
   border: none;

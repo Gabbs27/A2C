@@ -1,8 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
 
 /**
- * Playwright config for A2C smoke tests.
- * Runs against dev server (vite) at /A2C/ basename.
+ * Playwright config para los e2e de A2C.
+ * baseURL termina en / para que page.goto('inventario') resuelva bajo /A2C/.
+ * (page.goto('/inventario') saltaría el base path — usar rutas relativas.)
  */
 export default defineConfig({
   testDir: './tests/e2e',
@@ -13,7 +14,7 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never' }]],
 
   use: {
-    baseURL: 'http://localhost:5173/A2C',
+    baseURL: 'http://localhost:5173/A2C/',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -23,11 +24,15 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+    {
+      name: 'mobile',
+      use: { ...devices['iPhone 13'] },
+    },
   ],
 
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:5173/A2C',
+    url: 'http://localhost:5173/A2C/',
     reuseExistingServer: !process.env.CI,
     stdout: 'ignore',
     stderr: 'pipe',

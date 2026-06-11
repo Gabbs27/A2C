@@ -49,10 +49,24 @@ VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
 VITE_SUPABASE_ANON_KEY=YOUR_ANON_KEY
 ```
 
+**Modo demo:** si faltan las variables o Supabase no responde, la web pública
+sirve automáticamente un inventario de demostración local
+([`src/lib/demoData.js`](src/lib/demoData.js)) con una nota discreta — el sitio
+nunca se ve vacío ni roto. El admin, en cambio, muestra un aviso de backend no
+disponible. Toda lectura pública pasa por [`src/lib/api.js`](src/lib/api.js).
+
+**Recrear el backend:** en un proyecto Supabase nuevo ejecutar
+[`supabase/schema.sql`](supabase/schema.sql) y luego
+[`supabase/seed.sql`](supabase/seed.sql) (inventario inicial idéntico al demo),
+y crear el bucket público `vehicle-images` en Storage.
+
 Tablas esperadas en Supabase:
 - `vehicles` — id, brand, model, year, price_usd, mileage, status (disponible/reservado/vendido), featured, etc.
 - `vehicle_images` — vehicle_id, image_url, is_primary, display_order
 - `exchange_rates` — usd_to_dop, updated_at
+
+Datos de contacto, horarios y marca centralizados en
+[`src/lib/siteConfig.js`](src/lib/siteConfig.js).
 
 ## Build
 
@@ -77,23 +91,26 @@ Tests en [`tests/e2e/smoke.spec.js`](tests/e2e/smoke.spec.js). Cubren: home, inv
 
 ## Deploy
 
+El base path es dual: por defecto `/A2C/` (GitHub Pages); con
+`VITE_BASE_PATH=/` se construye para dominio raíz (Vercel). El dominio canónico
+para SEO se define con `VITE_SITE_URL` (default `https://a2cinternational.com`).
+
 ### Vercel (recomendado)
 
-`vercel.json` incluye CSP, HSTS, cache headers para assets/fonts, SPA rewrite. Para desplegar:
+`vercel.json` incluye CSP estricta (sin `unsafe-inline` en scripts), HSTS,
+cache headers para assets/fonts, SPA rewrite y
+`buildCommand: "VITE_BASE_PATH=/ npm run build"`. Para desplegar:
 
 1. Conectar repo a Vercel
 2. Framework: Vite
-3. Build command: `npm run build`
-4. Output directory: `dist`
-5. Actualizar `SITE_URL` en `src/lib/schema.js` con el dominio real
+3. Output directory: `dist`
+4. Configurar `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` en Environment Variables
 
 ### GitHub Pages (legacy)
 
 ```bash
-npm run deploy   # publica a gh-pages
+npm run deploy   # publica a gh-pages con base /A2C/
 ```
-
-Requiere que `base: '/A2C/'` en `vite.config.js` coincida con el subpath.
 
 ## Accesibilidad
 
@@ -117,25 +134,34 @@ Requiere que `base: '/A2C/'` en `vite.config.js` coincida con el subpath.
 ```
 src/
 ├─ components/
-│  ├─ ui/            Button, Picture
-│  ├─ Header, Hero, Footer, VehicleCard, ...
-│  ├─ ErrorBoundary, SEO
+│  ├─ ui/            Button
+│  ├─ Header, Hero, Footer, VehicleCard, Financing, ...
+│  ├─ ErrorBoundary, SEO, ScrollToTop, DemoNotice
 ├─ pages/
 │  ├─ HomePage, InventoryPage, VehicleDetailPage, ComparePage
+│  ├─ PrivacyPage, TermsPage, NotFoundPage
 │  └─ admin/        LoginPage, DashboardPage, VehicleFormPage
 ├─ hooks/            useReducedMotion, useIntersection
-├─ lib/              supabase, queryClient, schema
+├─ lib/              supabase, api (fallback demo), demoData, siteConfig,
+│                    queryClient, schema
 ├─ context/          AuthContext
 ├─ styles/           motion.css
 └─ index.css         design tokens
 
 public/
 ├─ fonts/            Fraunces + Inter Tight WOFF2 + OFL licenses
+├─ hero/             imágenes del hero self-hosted
 ├─ logo-dark.png     logo metálico sobre negro
 ├─ logo-light.png    logo sobre fondo claro
+├─ icon-*.png        favicons + apple-touch-icon (desde el logo)
+├─ manifest.webmanifest
 ├─ robots.txt
+├─ spa-redirect.js   restaura la URL tras 404.html (GH Pages)
 └─ 404.html          SPA redirect for GH Pages
 ```
+
+Rutas públicas: `/` · `/inventario` · `/vehiculo/:id` · `/comparar` ·
+`/privacidad` · `/terminos` · 404 catch-all. Admin: `/admin/*`.
 
 ## Licencia
 

@@ -97,6 +97,27 @@
   margin: 0;
 }
 
+.site-footer__legal {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.site-footer__legal-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--font-ui);
+  font-size: var(--text-ui-sm);
+  color: var(--silver-500);
+  transition: color var(--duration-fast) var(--ease-out-quart);
+}
+
+.site-footer__legal-link:hover,
+.site-footer__legal-link:focus-visible {
+  color: var(--silver-100);
+}
+
 .site-footer__social {
   list-style: none;
   display: flex;
@@ -145,6 +166,7 @@
 /* ─── Reduced motion ─── */
 @media (prefers-reduced-motion: reduce) {
   .site-footer__link,
+  .site-footer__legal-link,
   .site-footer__social-link {
     transition: none !important;
   }

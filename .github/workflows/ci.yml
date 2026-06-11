@@ -16,12 +16,14 @@ jobs:
           cache: npm
       - name: Install
         run: npm ci
-      - name: Build
+      - name: Build (base /A2C/ — GitHub Pages)
         run: npm run build
+      - name: Build (base / — para auditar con Lighthouse)
+        run: VITE_BASE_PATH=/ npm run build
       - name: Lighthouse CI
         run: |
           npm install -g @lhci/cli@0.13.x
-          lhci autorun --collect.staticDistDir=./dist --collect.url=http://localhost/index.html
+          lhci autorun
         continue-on-error: true
 
   e2e:
@@ -36,6 +38,8 @@ jobs:
         run: npm ci
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
+      # Sin secretos de Supabase la app sirve el inventario demo,
+      # así que los e2e cubren el flujo completo igualmente.
       - name: Run E2E
         run: npm run test:e2e
         env:

@@ -15,7 +15,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <ErrorBoundary>
       <HelmetProvider>
         <QueryClientProvider client={queryClient}>
-          <BrowserRouter basename="/A2C">
+          <BrowserRouter basename={import.meta.env.BASE_URL}>
             <AuthProvider>
               <App />
             </AuthProvider>

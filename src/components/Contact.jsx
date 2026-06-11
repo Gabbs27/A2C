@@ -1,13 +1,24 @@
 import { FiPhone, FiMail, FiMapPin, FiClock } from 'react-icons/fi'
+import {
+  ADDRESS,
+  EMAIL,
+  HOURS,
+  PHONE_DISPLAY,
+  PHONE_E164,
+} from '../lib/siteConfig'
 import './Contact.css'
 
 const CONTACT_ITEMS = [
   {
     icon: FiMapPin,
     label: 'Ubicación',
-    lines: ['Avenida 6', 'Santo Domingo 11114', 'República Dominicana'],
+    lines: [
+      ADDRESS.street,
+      `${ADDRESS.locality} ${ADDRESS.postalCode}`,
+      'República Dominicana',
+    ],
     link: {
-      href: 'https://maps.app.goo.gl/jV8nB1RSGDy96rbc7',
+      href: ADDRESS.mapsUrl,
       label: 'Ver en Google Maps',
       external: true,
     },
@@ -15,23 +26,19 @@ const CONTACT_ITEMS = [
   {
     icon: FiPhone,
     label: 'Teléfono',
-    lines: ['Ventas: +1 (829) 447-0259'],
-    link: { href: 'tel:+18294470259', label: 'Llamar ahora' },
+    lines: [`Ventas: ${PHONE_DISPLAY}`],
+    link: { href: `tel:${PHONE_E164}`, label: 'Llamar ahora' },
   },
   {
     icon: FiClock,
     label: 'Horario',
-    lines: [
-      'Lun – Vie: 9:00 AM – 8:00 PM',
-      'Sábado: 9:00 AM – 6:00 PM',
-      'Domingo: 11:00 AM – 5:00 PM',
-    ],
+    lines: HOURS.map((h) => `${h.days}: ${h.opens} – ${h.closes}`),
   },
   {
     icon: FiMail,
     label: 'Email',
-    lines: ['info@a2cinternational.com'],
-    link: { href: 'mailto:info@a2cinternational.com', label: 'Enviar email' },
+    lines: [EMAIL],
+    link: { href: `mailto:${EMAIL}`, label: 'Enviar email' },
   },
 ]
 
@@ -39,12 +46,12 @@ export default function Contact() {
   return (
     <section
       className="contact-section"
-      id="contacto-section"
+      id="contacto"
       aria-labelledby="contact-title"
     >
       <div className="container">
         <header className="contact-section__header">
-          <span className="contact-section__number" aria-hidden="true">04</span>
+          <span className="contact-section__number" aria-hidden="true">05</span>
           <div>
             <p className="eyebrow">Contacto</p>
             <h2 id="contact-title" className="display-xl contact-section__title">

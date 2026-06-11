@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { FiSave, FiX, FiPlus, FiUpload, FiArrowLeft, FiImage, FiLink, FiLoader } from 'react-icons/fi'
@@ -6,14 +6,27 @@ import './VehicleFormPage.css'
 
 const COMMON_FEATURES = [
   'A/C',
-  'Camara de Reversa',
+  'Cámara de Reversa',
   'Sunroof',
   'Asientos de Cuero',
   'Bluetooth',
-  'Navegacion GPS',
+  'Navegación GPS',
   'Sensores de Estacionamiento',
   'Cruise Control'
 ]
+
+const MAX_IMAGE_MB = 10
+
+// Supabase Storage rechaza claves con espacios, acentos o caracteres especiales
+const sanitizeFileName = (name) => {
+  const dot = name.lastIndexOf('.')
+  const rawBase = dot > 0 ? name.slice(0, dot) : name
+  const rawExt = dot > 0 ? name.slice(dot + 1) : 'jpg'
+  const clean = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+  const base = clean(rawBase).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'imagen'
+  const ext = clean(rawExt).replace(/[^a-z0-9]/g, '') || 'jpg'
+  return `${base}.${ext}`
+}
 
 const initialFormData = {
   brand: '',
@@ -44,21 +57,27 @@ const VehicleFormPage = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const isEditing = Boolean(id)
+  const maxYear = new Date().getFullYear() + 1
 
   const [formData, setFormData] = useState(initialFormData)
   const [featureInput, setFeatureInput] = useState('')
-  const [loading, setLoading] = useState(false)
   const [pageLoading, setPageLoading] = useState(isEditing)
+  const [loadError, setLoadError] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(null)
 
   // Image state
   const [existingImages, setExistingImages] = useState([]) // from DB
   const [newImageFiles, setNewImageFiles] = useState([]) // File objects to upload
   const [newImagePreviews, setNewImagePreviews] = useState([]) // preview URLs
-  const [primaryImageIndex, setPrimaryImageIndex] = useState(-1) // index in existingImages, or 'new-{idx}' for new images
+  const [primaryImageIndex, setPrimaryImageIndex] = useState(-1)
   const [primaryType, setPrimaryType] = useState('existing') // 'existing' or 'new'
   const [removedExistingImages, setRemovedExistingImages] = useState([])
+  const [imagesError, setImagesError] = useState('')
+
+  // Si la creación ya pasó pero fallaron subidas, el reintento debe actualizar (no duplicar)
+  const createdVehicleIdRef = useRef(null)
 
   // Image URL import state
   const [imageUrl, setImageUrl] = useState('')
@@ -124,7 +143,7 @@ const VehicleFormPage = () => {
         }
       } catch (err) {
         console.error('Error fetching vehicle:', err)
-        setError('Error al cargar el vehiculo.')
+        setLoadError('No se pudo cargar el vehículo. Es posible que haya sido eliminado o que el enlace no sea válido.')
       } finally {
         setPageLoading(false)
       }
@@ -182,43 +201,69 @@ const VehicleFormPage = () => {
   // Image handling
   const handleImageSelect = (e) => {
     const files = Array.from(e.target.files)
+    e.target.value = ''
     if (files.length === 0) return
 
-    const newFiles = [...newImageFiles, ...files]
-    setNewImageFiles(newFiles)
+    const limit = MAX_IMAGE_MB * 1024 * 1024
+    const accepted = files.filter((f) => f.size <= limit)
+    const rejected = files.length - accepted.length
+    setImagesError(
+      rejected > 0
+        ? rejected === 1
+          ? `1 imagen supera el límite de ${MAX_IMAGE_MB} MB y no se agregó.`
+          : `${rejected} imágenes superan el límite de ${MAX_IMAGE_MB} MB y no se agregaron.`
+        : ''
+    )
+    if (accepted.length === 0) return
 
-    const newPreviews = files.map((file) => URL.createObjectURL(file))
-    setNewImagePreviews((prev) => [...prev, ...newPreviews])
+    const hadNoImages = existingImages.length === 0 && newImageFiles.length === 0
+    setNewImageFiles((prev) => [...prev, ...accepted])
+    setNewImagePreviews((prev) => [...prev, ...accepted.map((file) => URL.createObjectURL(file))])
 
-    // If no primary set yet, set first image as primary
-    if (existingImages.length === 0 && newImageFiles.length === 0 && primaryImageIndex === -1) {
+    if (hadNoImages && primaryImageIndex === -1) {
       setPrimaryImageIndex(0)
       setPrimaryType('new')
     }
-
-    // Reset file input
-    e.target.value = ''
   }
 
   const handleRemoveNewImage = (index) => {
     URL.revokeObjectURL(newImagePreviews[index])
+    const remaining = newImageFiles.length - 1
     setNewImageFiles((prev) => prev.filter((_, i) => i !== index))
     setNewImagePreviews((prev) => prev.filter((_, i) => i !== index))
 
     if (primaryType === 'new' && primaryImageIndex === index) {
-      setPrimaryImageIndex(-1)
+      // Se borró la primaria: promover la primera restante
+      if (existingImages.length > 0) {
+        setPrimaryType('existing')
+        setPrimaryImageIndex(0)
+      } else if (remaining > 0) {
+        setPrimaryType('new')
+        setPrimaryImageIndex(0)
+      } else {
+        setPrimaryImageIndex(-1)
+      }
     } else if (primaryType === 'new' && primaryImageIndex > index) {
       setPrimaryImageIndex((prev) => prev - 1)
     }
   }
 
-  const handleRemoveExistingImage = async (index) => {
+  const handleRemoveExistingImage = (index) => {
     const image = existingImages[index]
+    const remaining = existingImages.length - 1
     setRemovedExistingImages((prev) => [...prev, image])
     setExistingImages((prev) => prev.filter((_, i) => i !== index))
 
     if (primaryType === 'existing' && primaryImageIndex === index) {
-      setPrimaryImageIndex(-1)
+      // Se borró la primaria: promover la primera restante
+      if (remaining > 0) {
+        setPrimaryImageIndex(0)
+      } else if (newImageFiles.length > 0) {
+        setPrimaryType('new')
+        setPrimaryImageIndex(0)
+      } else {
+        setPrimaryImageIndex(-1)
+      }
     } else if (primaryType === 'existing' && primaryImageIndex > index) {
       setPrimaryImageIndex((prev) => prev - 1)
     }
@@ -238,7 +283,7 @@ const VehicleFormPage = () => {
     try {
       new URL(url)
     } catch {
-      setImageUrlError('URL no valida. Ingrese una URL completa (ej: https://ejemplo.com/imagen.jpg)')
+      setImageUrlError('URL no válida. Ingrese una URL completa (ej: https://ejemplo.com/imagen.jpg)')
       return
     }
 
@@ -254,22 +299,24 @@ const VehicleFormPage = () => {
 
       const contentType = response.headers.get('content-type') || ''
       if (!contentType.startsWith('image/')) {
-        throw new Error('La URL no apunta a una imagen valida.')
+        throw new Error('La URL no apunta a una imagen válida.')
       }
 
       const blob = await response.blob()
+      if (blob.size > MAX_IMAGE_MB * 1024 * 1024) {
+        throw new Error(`La imagen supera el límite de ${MAX_IMAGE_MB} MB.`)
+      }
       const extension = contentType.split('/')[1]?.split(';')[0] || 'jpg'
       const fileName = `imported-${Date.now()}.${extension}`
       const file = new File([blob], fileName, { type: blob.type })
 
-      const newFiles = [...newImageFiles, file]
-      setNewImageFiles(newFiles)
+      const hadNoImages = existingImages.length === 0 && newImageFiles.length === 0
+      setNewImageFiles((prev) => [...prev, file])
 
       const previewUrl = URL.createObjectURL(blob)
       setNewImagePreviews((prev) => [...prev, previewUrl])
 
-      // If no primary set yet, set this image as primary
-      if (existingImages.length === 0 && newImageFiles.length === 0 && primaryImageIndex === -1) {
+      if (hadNoImages && primaryImageIndex === -1) {
         setPrimaryImageIndex(0)
         setPrimaryType('new')
       }
@@ -278,7 +325,12 @@ const VehicleFormPage = () => {
       setImageUrlError('')
     } catch (err) {
       console.error('Error importing image from URL:', err)
-      setImageUrlError(err.message || 'Error al importar la imagen. Verifique la URL e intente de nuevo.')
+      if (err instanceof TypeError) {
+        // fetch cross-origin bloqueado por CORS en la mayoría de los hosts de imágenes
+        setImageUrlError('No se pudo descargar la imagen: el sitio no permite descargas externas. Guarde la imagen en su dispositivo y súbala como archivo.')
+      } else {
+        setImageUrlError(err.message || 'Error al importar la imagen. Verifique la URL e intente de nuevo.')
+      }
     } finally {
       setImageUrlLoading(false)
     }
@@ -289,42 +341,52 @@ const VehicleFormPage = () => {
     if (!formData.brand.trim()) return 'La marca es requerida.'
     if (!formData.model.trim()) return 'El modelo es requerido.'
     if (!formData.year) return 'El año es requerido.'
+    const year = parseInt(formData.year, 10)
+    if (Number.isNaN(year) || year < 1990 || year > maxYear) {
+      return `El año debe estar entre 1990 y ${maxYear}.`
+    }
     if (!formData.price_usd) return 'El precio es requerido.'
+    const instagramUrl = formData.instagram_url.trim()
+    if (instagramUrl) {
+      try {
+        const parsed = new URL(instagramUrl)
+        if (parsed.protocol !== 'https:') throw new Error()
+      } catch {
+        return 'El enlace de Instagram debe ser una URL válida que comience con https://.'
+      }
+    }
     return null
   }
 
   // Upload images to Supabase Storage
   const uploadImages = async (vehicleId) => {
-    const uploadedImages = []
+    const uploaded = []
+    const failedIndices = []
 
     for (let i = 0; i < newImageFiles.length; i++) {
       const file = newImageFiles[i]
-      const fileName = `${vehicleId}/${Date.now()}-${file.name}`
+      setUploadProgress({ current: i + 1, total: newImageFiles.length })
+      const path = `${vehicleId}/${Date.now()}-${i}-${sanitizeFileName(file.name)}`
 
       const { error: uploadError } = await supabase.storage
         .from('vehicle-images')
-        .upload(fileName, file)
+        .upload(path, file)
 
       if (uploadError) {
         console.error('Upload error:', uploadError)
+        failedIndices.push(i)
         continue
       }
 
       const { data: { publicUrl } } = supabase.storage
         .from('vehicle-images')
-        .getPublicUrl(fileName)
+        .getPublicUrl(path)
 
-      const isPrimary = primaryType === 'new' && primaryImageIndex === i
-
-      uploadedImages.push({
-        vehicle_id: vehicleId,
-        image_url: publicUrl,
-        display_order: existingImages.length + i,
-        is_primary: isPrimary
-      })
+      uploaded.push({ originalIndex: i, image_url: publicUrl })
     }
 
-    return uploadedImages
+    setUploadProgress(null)
+    return { uploaded, failedIndices }
   }
 
   // Form submission
@@ -366,57 +428,19 @@ const VehicleFormPage = () => {
         instagram_url: formData.instagram_url.trim() || null
       }
 
-      let vehicleId = id
+      let vehicleId = id || createdVehicleIdRef.current
 
-      if (isEditing) {
-        // Update vehicle
+      if (vehicleId) {
+        // .select().single() hace que un update de cero filas (id inexistente) falle en vez de "guardar" en silencio
         const { error: updateError } = await supabase
           .from('vehicles')
           .update(vehicleData)
-          .eq('id', id)
+          .eq('id', vehicleId)
+          .select('id')
+          .single()
 
         if (updateError) throw updateError
-
-        // Handle removed existing images
-        for (const img of removedExistingImages) {
-          // Delete from storage - extract path from URL
-          const urlParts = img.image_url.split('/vehicle-images/')
-          if (urlParts.length > 1) {
-            const storagePath = urlParts[1]
-            await supabase.storage.from('vehicle-images').remove([storagePath])
-          }
-
-          // Delete from DB
-          await supabase
-            .from('vehicle_images')
-            .delete()
-            .eq('id', img.id)
-        }
-
-        // If primary changed among existing images, update
-        if (primaryType === 'existing' && primaryImageIndex >= 0) {
-          // Reset all existing images to not primary
-          await supabase
-            .from('vehicle_images')
-            .update({ is_primary: false })
-            .eq('vehicle_id', id)
-
-          // Set the selected one as primary
-          if (existingImages[primaryImageIndex]) {
-            await supabase
-              .from('vehicle_images')
-              .update({ is_primary: true })
-              .eq('id', existingImages[primaryImageIndex].id)
-          }
-        } else if (primaryType === 'new' || existingImages.length === 0) {
-          // Reset all existing images to not primary (new primary will be among uploaded)
-          await supabase
-            .from('vehicle_images')
-            .update({ is_primary: false })
-            .eq('vehicle_id', id)
-        }
       } else {
-        // Create vehicle
         const { data: newVehicle, error: insertError } = await supabase
           .from('vehicles')
           .insert(vehicleData)
@@ -425,55 +449,144 @@ const VehicleFormPage = () => {
 
         if (insertError) throw insertError
         vehicleId = newVehicle.id
+        createdVehicleIdRef.current = vehicleId
       }
 
-      // Upload new images
-      if (newImageFiles.length > 0) {
-        const uploadedImages = await uploadImages(vehicleId)
-
-        if (uploadedImages.length > 0) {
-          // If no primary was set among existing, check if one is set in new
-          const hasPrimaryInExisting = primaryType === 'existing' && primaryImageIndex >= 0
-          if (!hasPrimaryInExisting && !isEditing && uploadedImages.length > 0) {
-            // If creating and no existing images, set first new image as primary if none selected
-            const hasPrimaryInNew = uploadedImages.some((img) => img.is_primary)
-            if (!hasPrimaryInNew) {
-              uploadedImages[0].is_primary = true
-            }
-          }
-
-          const { error: imgInsertError } = await supabase
-            .from('vehicle_images')
-            .insert(uploadedImages)
-
-          if (imgInsertError) {
-            console.error('Error inserting images:', imgInsertError)
-          }
+      // Handle removed existing images
+      for (const img of removedExistingImages) {
+        const urlParts = img.image_url.split('/vehicle-images/')
+        if (urlParts.length > 1) {
+          await supabase.storage.from('vehicle-images').remove([urlParts[1]])
         }
+
+        const { error: deleteError } = await supabase
+          .from('vehicle_images')
+          .delete()
+          .eq('id', img.id)
+
+        if (deleteError) throw deleteError
+      }
+
+      const totalToUpload = newImageFiles.length
+      const { uploaded, failedIndices } = totalToUpload > 0
+        ? await uploadImages(vehicleId)
+        : { uploaded: [], failedIndices: [] }
+
+      // Reconciliar la primaria: exactamente una entre las imágenes que sobreviven
+      let finalPrimary = null
+      if (primaryType === 'existing' && existingImages[primaryImageIndex]) {
+        finalPrimary = { type: 'existing', id: existingImages[primaryImageIndex].id }
+      } else if (primaryType === 'new' && uploaded.some((u) => u.originalIndex === primaryImageIndex)) {
+        finalPrimary = { type: 'new', originalIndex: primaryImageIndex }
+      }
+      if (!finalPrimary) {
+        if (existingImages.length > 0) {
+          finalPrimary = { type: 'existing', id: existingImages[0].id }
+        } else if (uploaded.length > 0) {
+          finalPrimary = { type: 'new', originalIndex: uploaded[0].originalIndex }
+        }
+      }
+
+      // Renumerar las imágenes que quedan para que el orden de galería sea estable
+      for (let i = 0; i < existingImages.length; i++) {
+        const img = existingImages[i]
+        const isPrimary = finalPrimary?.type === 'existing' && finalPrimary.id === img.id
+        if (img.display_order !== i || Boolean(img.is_primary) !== isPrimary) {
+          const { error: reorderError } = await supabase
+            .from('vehicle_images')
+            .update({ display_order: i, is_primary: isPrimary })
+            .eq('id', img.id)
+
+          if (reorderError) throw reorderError
+        }
+      }
+
+      let insertedRows = []
+      if (uploaded.length > 0) {
+        const records = uploaded.map((u, j) => ({
+          vehicle_id: vehicleId,
+          image_url: u.image_url,
+          display_order: existingImages.length + j,
+          is_primary: finalPrimary?.type === 'new' && finalPrimary.originalIndex === u.originalIndex
+        }))
+
+        const { data: inserted, error: imgInsertError } = await supabase
+          .from('vehicle_images')
+          .insert(records)
+          .select()
+
+        if (imgInsertError) throw imgInsertError
+        insertedRows = inserted || []
+      }
+
+      if (failedIndices.length > 0) {
+        // Quedarse en la página: lo subido pasa a "existente" y solo los fallidos quedan para reintentar
+        uploaded.forEach((u) => URL.revokeObjectURL(newImagePreviews[u.originalIndex]))
+        const survivors = existingImages.map((img, i) => ({
+          ...img,
+          display_order: i,
+          is_primary: finalPrimary?.type === 'existing' && finalPrimary.id === img.id
+        }))
+        const merged = [...survivors, ...insertedRows]
+        setExistingImages(merged)
+        setRemovedExistingImages([])
+        setNewImageFiles((prev) => prev.filter((_, i) => failedIndices.includes(i)))
+        setNewImagePreviews((prev) => prev.filter((_, i) => failedIndices.includes(i)))
+        const primaryIdx = merged.findIndex((img) => img.is_primary)
+        setPrimaryType('existing')
+        setPrimaryImageIndex(primaryIdx)
+        setError(`${failedIndices.length} de ${totalToUpload} imágenes no se pudieron subir. Verifique su conexión e intente guardar de nuevo.`)
+        return
       }
 
       navigate('/admin')
     } catch (err) {
       console.error('Error saving vehicle:', err)
-      setError('Error al guardar el vehiculo. Por favor intente de nuevo.')
+      setError('Error al guardar el vehículo. Por favor intente de nuevo.')
     } finally {
       setSubmitting(false)
+      setUploadProgress(null)
     }
   }
 
   // Cleanup preview URLs on unmount
+  const previewsRef = useRef([])
+  useEffect(() => {
+    previewsRef.current = newImagePreviews
+  }, [newImagePreviews])
   useEffect(() => {
     return () => {
-      newImagePreviews.forEach((url) => URL.revokeObjectURL(url))
+      previewsRef.current.forEach((url) => URL.revokeObjectURL(url))
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   if (pageLoading) {
     return (
       <div className="vehicle-form-page">
-        <div className="form-loading">
-          <div className="spinner spinner--dark" />
-          <p>Cargando vehiculo...</p>
+        <div className="vehicle-form-container">
+          <div className="form-loading">
+            <div className="spinner" />
+            <p>Cargando vehículo...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (loadError) {
+    return (
+      <div className="vehicle-form-page">
+        <div className="vehicle-form-container">
+          <div className="vehicle-form-header">
+            <h1>Editar Vehículo</h1>
+          </div>
+          <div className="form-load-error">
+            <div className="form-error" role="alert">{loadError}</div>
+            <Link to="/admin" className="back-btn">
+              <FiArrowLeft />
+              Volver al Panel
+            </Link>
+          </div>
         </div>
       </div>
     )
@@ -481,450 +594,481 @@ const VehicleFormPage = () => {
 
   return (
     <div className="vehicle-form-page">
-      {/* Header */}
-      <div className="vehicle-form-header">
-        <h1>{isEditing ? 'Editar Vehiculo' : 'Nuevo Vehiculo'}</h1>
-        <Link to="/admin" className="back-btn">
-          <FiArrowLeft />
-          Volver al Panel
-        </Link>
-      </div>
-
-      <form className="vehicle-form" onSubmit={handleSubmit}>
-        {/* Informacion Basica */}
-        <div className="form-section">
-          <h2>Informacion Basica</h2>
-          <div className="form-grid">
-            <div className="form-group">
-              <label>Marca <span className="required">*</span></label>
-              <input
-                type="text"
-                name="brand"
-                value={formData.brand}
-                onChange={handleChange}
-                placeholder="Ej: Toyota"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label>Modelo <span className="required">*</span></label>
-              <input
-                type="text"
-                name="model"
-                value={formData.model}
-                onChange={handleChange}
-                placeholder="Ej: Camry"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label>Ano <span className="required">*</span></label>
-              <input
-                type="number"
-                name="year"
-                value={formData.year}
-                onChange={handleChange}
-                min="1990"
-                max="2026"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label>Precio (USD) <span className="required">*</span></label>
-              <input
-                type="number"
-                name="price_usd"
-                value={formData.price_usd}
-                onChange={handleChange}
-                placeholder="Ej: 35000"
-                min="0"
-                step="1"
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label>Condicion</label>
-              <select name="condition" value={formData.condition} onChange={handleChange}>
-                <option value="nuevo">Nuevo</option>
-                <option value="usado">Usado</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Estado</label>
-              <select name="status" value={formData.status} onChange={handleChange}>
-                <option value="disponible">Disponible</option>
-                <option value="vendido">Vendido</option>
-                <option value="reservado">Reservado</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Especificaciones */}
-        <div className="form-section">
-          <h2>Especificaciones</h2>
-          <div className="form-grid-3">
-            <div className="form-group">
-              <label>Kilometraje</label>
-              <input
-                type="number"
-                name="mileage"
-                value={formData.mileage}
-                onChange={handleChange}
-                placeholder="Ej: 45000"
-                min="0"
-              />
-            </div>
-            <div className="form-group">
-              <label>Combustible</label>
-              <select name="fuel_type" value={formData.fuel_type} onChange={handleChange}>
-                <option value="gasolina">Gasolina</option>
-                <option value="diesel">Diesel</option>
-                <option value="electrico">Electrico</option>
-                <option value="hibrido">Hibrido</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Transmision</label>
-              <select name="transmission" value={formData.transmission} onChange={handleChange}>
-                <option value="automatica">Automatica</option>
-                <option value="manual">Manual</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Motor</label>
-              <input
-                type="text"
-                name="engine"
-                value={formData.engine}
-                onChange={handleChange}
-                placeholder="3.5L V6"
-              />
-            </div>
-            <div className="form-group">
-              <label>Tipo de Carroceria</label>
-              <select name="body_type" value={formData.body_type} onChange={handleChange}>
-                <option value="sedan">Sedan</option>
-                <option value="suv">SUV</option>
-                <option value="pickup">Pickup</option>
-                <option value="coupe">Coupe</option>
-                <option value="convertible">Convertible</option>
-                <option value="van">Van</option>
-                <option value="truck">Truck</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Color</label>
-              <input
-                type="text"
-                name="color"
-                value={formData.color}
-                onChange={handleChange}
-                placeholder="Ej: Negro"
-              />
-            </div>
-            <div className="form-group">
-              <label>Color Interior</label>
-              <input
-                type="text"
-                name="interior_color"
-                value={formData.interior_color}
-                onChange={handleChange}
-                placeholder="Ej: Beige"
-              />
-            </div>
-            <div className="form-group">
-              <label>Puertas</label>
-              <input
-                type="number"
-                name="doors"
-                value={formData.doors}
-                onChange={handleChange}
-                min="2"
-                max="6"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Descripcion */}
-        <div className="form-section">
-          <h2>Descripcion</h2>
-          <div className="form-grid">
-            <div className="form-group full-width">
-              <label>Descripcion</label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                rows={4}
-                placeholder="Descripcion detallada del vehiculo..."
-              />
-            </div>
-
-            <div className="form-group full-width">
-              <label>Caracteristicas</label>
-              <div className="features-input-row">
-                <input
-                  type="text"
-                  value={featureInput}
-                  onChange={(e) => setFeatureInput(e.target.value)}
-                  onKeyDown={handleFeatureKeyDown}
-                  placeholder="Agregar caracteristica..."
-                />
-                <button type="button" className="features-add-btn" onClick={handleAddFeature}>
-                  <FiPlus />
-                  Agregar
-                </button>
-              </div>
-
-              {formData.features.length > 0 && (
-                <div className="features-tags">
-                  {formData.features.map((feature) => (
-                    <span key={feature} className="feature-tag">
-                      {feature}
-                      <button type="button" onClick={() => handleRemoveFeature(feature)}>
-                        <FiX />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              <div className="common-features">
-                <div className="common-features-label">Caracteristicas comunes:</div>
-                <div className="common-features-list">
-                  {COMMON_FEATURES.filter((f) => !formData.features.includes(f)).map((feature) => (
-                    <button
-                      key={feature}
-                      type="button"
-                      className="common-feature-btn"
-                      onClick={() => handleAddCommonFeature(feature)}
-                    >
-                      + {feature}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="form-group full-width">
-              <label>Historial del Vehiculo</label>
-              <textarea
-                name="vehicle_history"
-                value={formData.vehicle_history}
-                onChange={handleChange}
-                rows={3}
-                placeholder="Historial de propietarios, accidentes, etc."
-              />
-            </div>
-
-            <div className="form-group full-width">
-              <label>Notas de Inspeccion</label>
-              <textarea
-                name="inspection_notes"
-                value={formData.inspection_notes}
-                onChange={handleChange}
-                rows={3}
-                placeholder="Notas de la inspeccion del vehiculo..."
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Configuracion */}
-        <div className="form-section">
-          <h2>Configuracion</h2>
-          <div className="form-grid">
-            <div className="form-group full-width">
-              <div className="checkbox-group">
-                <input
-                  type="checkbox"
-                  id="featured"
-                  name="featured"
-                  checked={formData.featured}
-                  onChange={handleChange}
-                />
-                <label htmlFor="featured">Mostrar en pagina principal</label>
-              </div>
-            </div>
-            <div className="form-group">
-              <label>VIN</label>
-              <input
-                type="text"
-                name="vin"
-                value={formData.vin}
-                onChange={handleChange}
-                placeholder="Numero de identificacion"
-              />
-            </div>
-            <div className="form-group">
-              <label>Ubicacion</label>
-              <input
-                type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleChange}
-                placeholder="Santo Domingo, RD"
-              />
-            </div>
-            <div className="form-group full-width">
-              <label>Instagram URL</label>
-              <input
-                type="text"
-                name="instagram_url"
-                value={formData.instagram_url}
-                onChange={handleChange}
-                placeholder="https://instagram.com/p/..."
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Imagenes */}
-        <div className="form-section">
-          <h2>Imagenes</h2>
-          <div className="image-upload-area">
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleImageSelect}
-            />
-            <div className="image-upload-icon">
-              <FiImage />
-            </div>
-            <div className="image-upload-text">
-              <span>Click para seleccionar</span> o arrastra imagenes aqui
-            </div>
-          </div>
-
-          {/* Import from URL */}
-          <div className="image-url-import">
-            <label className="image-url-label">
-              <FiLink />
-              Importar imagen desde URL
-            </label>
-            <div className="image-url-input-row">
-              <input
-                type="text"
-                value={imageUrl}
-                onChange={(e) => { setImageUrl(e.target.value); setImageUrlError('') }}
-                placeholder="https://example.com/image.jpg"
-                className="image-url-input"
-                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleImportFromUrl() } }}
-              />
-              <button
-                type="button"
-                className="image-url-btn"
-                onClick={handleImportFromUrl}
-                disabled={imageUrlLoading || !imageUrl.trim()}
-              >
-                {imageUrlLoading ? (
-                  <>
-                    <FiLoader className="spin-icon" />
-                    Importando...
-                  </>
-                ) : (
-                  <>
-                    <FiUpload />
-                    Importar
-                  </>
-                )}
-              </button>
-            </div>
-            {imageUrlError && (
-              <div className="image-url-error">{imageUrlError}</div>
-            )}
-          </div>
-
-          {(existingImages.length > 0 || newImagePreviews.length > 0) && (
-            <div className="image-previews">
-              {/* Existing images */}
-              {existingImages.map((img, index) => (
-                <div
-                  key={`existing-${img.id}`}
-                  className={`image-preview-item ${primaryType === 'existing' && primaryImageIndex === index ? 'primary' : ''}`}
-                >
-                  <img src={img.image_url} alt={`Imagen ${index + 1}`} />
-                  <div className="image-preview-overlay">
-                    <label className="image-primary-radio">
-                      <input
-                        type="radio"
-                        name="primary-image"
-                        checked={primaryType === 'existing' && primaryImageIndex === index}
-                        onChange={() => handleSetPrimary('existing', index)}
-                      />
-                      Principal
-                    </label>
-                    <button
-                      type="button"
-                      className="image-remove-btn"
-                      onClick={() => handleRemoveExistingImage(index)}
-                    >
-                      <FiX />
-                    </button>
-                  </div>
-                  {primaryType === 'existing' && primaryImageIndex === index && (
-                    <div className="primary-label">Principal</div>
-                  )}
-                </div>
-              ))}
-
-              {/* New image previews */}
-              {newImagePreviews.map((previewUrl, index) => (
-                <div
-                  key={`new-${index}`}
-                  className={`image-preview-item ${primaryType === 'new' && primaryImageIndex === index ? 'primary' : ''}`}
-                >
-                  <img src={previewUrl} alt={`Nueva imagen ${index + 1}`} />
-                  <div className="image-preview-overlay">
-                    <label className="image-primary-radio">
-                      <input
-                        type="radio"
-                        name="primary-image"
-                        checked={primaryType === 'new' && primaryImageIndex === index}
-                        onChange={() => handleSetPrimary('new', index)}
-                      />
-                      Principal
-                    </label>
-                    <button
-                      type="button"
-                      className="image-remove-btn"
-                      onClick={() => handleRemoveNewImage(index)}
-                    >
-                      <FiX />
-                    </button>
-                  </div>
-                  {primaryType === 'new' && primaryImageIndex === index && (
-                    <div className="primary-label">Principal</div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Error */}
-        {error && <div className="form-error">{error}</div>}
-
-        {/* Submit */}
-        <div className="form-submit-section">
-          <button type="submit" className="submit-btn" disabled={submitting}>
-            {submitting ? (
-              <>Guardando...</>
-            ) : (
-              <>
-                <FiSave />
-                {isEditing ? 'Actualizar Vehiculo' : 'Guardar Vehiculo'}
-              </>
-            )}
-          </button>
-          <Link to="/admin" className="cancel-btn">
-            Cancelar
+      <div className="vehicle-form-container">
+        {/* Header */}
+        <div className="vehicle-form-header">
+          <h1>{isEditing ? 'Editar Vehículo' : 'Nuevo Vehículo'}</h1>
+          <Link to="/admin" className="back-btn">
+            <FiArrowLeft />
+            Volver al Panel
           </Link>
         </div>
-      </form>
+
+        <form className="vehicle-form" onSubmit={handleSubmit}>
+          {/* Información básica */}
+          <div className="form-section">
+            <h2>Información Básica</h2>
+            <div className="form-grid">
+              <div className="form-group">
+                <label htmlFor="brand">Marca <span className="required">*</span></label>
+                <input
+                  id="brand"
+                  type="text"
+                  name="brand"
+                  value={formData.brand}
+                  onChange={handleChange}
+                  placeholder="Ej: Toyota"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="model">Modelo <span className="required">*</span></label>
+                <input
+                  id="model"
+                  type="text"
+                  name="model"
+                  value={formData.model}
+                  onChange={handleChange}
+                  placeholder="Ej: Camry"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="year">Año <span className="required">*</span></label>
+                <input
+                  id="year"
+                  type="number"
+                  name="year"
+                  value={formData.year}
+                  onChange={handleChange}
+                  min="1990"
+                  max={maxYear}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="price_usd">Precio (USD) <span className="required">*</span></label>
+                <input
+                  id="price_usd"
+                  type="number"
+                  name="price_usd"
+                  value={formData.price_usd}
+                  onChange={handleChange}
+                  placeholder="Ej: 35000"
+                  min="0"
+                  step="1"
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="condition">Condición</label>
+                <select id="condition" name="condition" value={formData.condition} onChange={handleChange}>
+                  <option value="nuevo">Nuevo</option>
+                  <option value="usado">Usado</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="status">Estado</label>
+                <select id="status" name="status" value={formData.status} onChange={handleChange}>
+                  <option value="disponible">Disponible</option>
+                  <option value="vendido">Vendido</option>
+                  <option value="reservado">Reservado</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Especificaciones */}
+          <div className="form-section">
+            <h2>Especificaciones</h2>
+            <div className="form-grid-3">
+              <div className="form-group">
+                <label htmlFor="mileage">Kilometraje</label>
+                <input
+                  id="mileage"
+                  type="number"
+                  name="mileage"
+                  value={formData.mileage}
+                  onChange={handleChange}
+                  placeholder="Ej: 45000"
+                  min="0"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="fuel_type">Combustible</label>
+                <select id="fuel_type" name="fuel_type" value={formData.fuel_type} onChange={handleChange}>
+                  <option value="gasolina">Gasolina</option>
+                  <option value="diesel">Diésel</option>
+                  <option value="electrico">Eléctrico</option>
+                  <option value="hibrido">Híbrido</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="transmission">Transmisión</label>
+                <select id="transmission" name="transmission" value={formData.transmission} onChange={handleChange}>
+                  <option value="automatica">Automática</option>
+                  <option value="manual">Manual</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="engine">Motor</label>
+                <input
+                  id="engine"
+                  type="text"
+                  name="engine"
+                  value={formData.engine}
+                  onChange={handleChange}
+                  placeholder="3.5L V6"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="body_type">Tipo de Carrocería</label>
+                <select id="body_type" name="body_type" value={formData.body_type} onChange={handleChange}>
+                  <option value="sedan">Sedán</option>
+                  <option value="suv">SUV</option>
+                  <option value="pickup">Pickup</option>
+                  <option value="coupe">Coupé</option>
+                  <option value="convertible">Convertible</option>
+                  <option value="van">Van</option>
+                  <option value="truck">Camión</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label htmlFor="color">Color</label>
+                <input
+                  id="color"
+                  type="text"
+                  name="color"
+                  value={formData.color}
+                  onChange={handleChange}
+                  placeholder="Ej: Negro"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="interior_color">Color Interior</label>
+                <input
+                  id="interior_color"
+                  type="text"
+                  name="interior_color"
+                  value={formData.interior_color}
+                  onChange={handleChange}
+                  placeholder="Ej: Beige"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="doors">Puertas</label>
+                <input
+                  id="doors"
+                  type="number"
+                  name="doors"
+                  value={formData.doors}
+                  onChange={handleChange}
+                  min="2"
+                  max="6"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Descripción */}
+          <div className="form-section">
+            <h2>Descripción</h2>
+            <div className="form-grid">
+              <div className="form-group full-width">
+                <label htmlFor="description">Descripción</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  rows={4}
+                  placeholder="Descripción detallada del vehículo..."
+                />
+              </div>
+
+              <div className="form-group full-width">
+                <label htmlFor="feature-input">Características</label>
+                <div className="features-input-row">
+                  <input
+                    id="feature-input"
+                    type="text"
+                    value={featureInput}
+                    onChange={(e) => setFeatureInput(e.target.value)}
+                    onKeyDown={handleFeatureKeyDown}
+                    placeholder="Agregar característica..."
+                  />
+                  <button type="button" className="features-add-btn" onClick={handleAddFeature}>
+                    <FiPlus />
+                    Agregar
+                  </button>
+                </div>
+
+                {formData.features.length > 0 && (
+                  <div className="features-tags">
+                    {formData.features.map((feature) => (
+                      <span key={feature} className="feature-tag">
+                        {feature}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveFeature(feature)}
+                          aria-label={`Quitar ${feature}`}
+                        >
+                          <FiX />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="common-features">
+                  <div className="common-features-label">Características comunes:</div>
+                  <div className="common-features-list">
+                    {COMMON_FEATURES.filter((f) => !formData.features.includes(f)).map((feature) => (
+                      <button
+                        key={feature}
+                        type="button"
+                        className="common-feature-btn"
+                        onClick={() => handleAddCommonFeature(feature)}
+                      >
+                        + {feature}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="form-group full-width">
+                <label htmlFor="vehicle_history">Historial del Vehículo</label>
+                <textarea
+                  id="vehicle_history"
+                  name="vehicle_history"
+                  value={formData.vehicle_history}
+                  onChange={handleChange}
+                  rows={3}
+                  placeholder="Historial de propietarios, accidentes, etc."
+                />
+              </div>
+
+              <div className="form-group full-width">
+                <label htmlFor="inspection_notes">Notas de Inspección</label>
+                <textarea
+                  id="inspection_notes"
+                  name="inspection_notes"
+                  value={formData.inspection_notes}
+                  onChange={handleChange}
+                  rows={3}
+                  placeholder="Notas de la inspección del vehículo..."
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Configuración */}
+          <div className="form-section">
+            <h2>Configuración</h2>
+            <div className="form-grid">
+              <div className="form-group full-width">
+                <div className="checkbox-group">
+                  <input
+                    type="checkbox"
+                    id="featured"
+                    name="featured"
+                    checked={formData.featured}
+                    onChange={handleChange}
+                  />
+                  <label htmlFor="featured">Mostrar en página principal</label>
+                </div>
+              </div>
+              <div className="form-group">
+                <label htmlFor="vin">VIN</label>
+                <input
+                  id="vin"
+                  type="text"
+                  name="vin"
+                  value={formData.vin}
+                  onChange={handleChange}
+                  placeholder="Número de identificación"
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="location">Ubicación</label>
+                <input
+                  id="location"
+                  type="text"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  placeholder="Santo Domingo, RD"
+                />
+              </div>
+              <div className="form-group full-width">
+                <label htmlFor="instagram_url">Instagram URL</label>
+                <input
+                  id="instagram_url"
+                  type="url"
+                  name="instagram_url"
+                  value={formData.instagram_url}
+                  onChange={handleChange}
+                  placeholder="https://instagram.com/p/..."
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Imágenes */}
+          <div className="form-section">
+            <h2>Imágenes</h2>
+            <div className="image-upload-area">
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageSelect}
+                aria-label="Seleccionar imágenes"
+              />
+              <div className="image-upload-icon">
+                <FiImage />
+              </div>
+              <div className="image-upload-text">
+                <span>Haga clic para seleccionar</span> o arrastre las imágenes aquí
+              </div>
+            </div>
+            {imagesError && (
+              <div className="image-upload-error" role="alert">{imagesError}</div>
+            )}
+
+            {/* Import from URL */}
+            <div className="image-url-import">
+              <label className="image-url-label" htmlFor="image-url-input">
+                <FiLink />
+                Importar imagen desde URL
+              </label>
+              <div className="image-url-input-row">
+                <input
+                  id="image-url-input"
+                  type="url"
+                  value={imageUrl}
+                  onChange={(e) => { setImageUrl(e.target.value); setImageUrlError('') }}
+                  placeholder="https://ejemplo.com/imagen.jpg"
+                  className="image-url-input"
+                  onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleImportFromUrl() } }}
+                />
+                <button
+                  type="button"
+                  className="image-url-btn"
+                  onClick={handleImportFromUrl}
+                  disabled={imageUrlLoading || submitting || !imageUrl.trim()}
+                >
+                  {imageUrlLoading ? (
+                    <>
+                      <FiLoader className="spin-icon" />
+                      Importando...
+                    </>
+                  ) : (
+                    <>
+                      <FiUpload />
+                      Importar
+                    </>
+                  )}
+                </button>
+              </div>
+              {imageUrlError && (
+                <div className="image-url-error" role="alert">{imageUrlError}</div>
+              )}
+            </div>
+
+            {(existingImages.length > 0 || newImagePreviews.length > 0) && (
+              <div className="image-previews">
+                {/* Existing images */}
+                {existingImages.map((img, index) => (
+                  <div
+                    key={`existing-${img.id}`}
+                    className={`image-preview-item ${primaryType === 'existing' && primaryImageIndex === index ? 'primary' : ''}`}
+                  >
+                    <img src={img.image_url} alt={`Imagen ${index + 1}`} />
+                    <div className="image-preview-overlay">
+                      <label className="image-primary-radio">
+                        <input
+                          type="radio"
+                          name="primary-image"
+                          checked={primaryType === 'existing' && primaryImageIndex === index}
+                          onChange={() => handleSetPrimary('existing', index)}
+                        />
+                        Principal
+                      </label>
+                      <button
+                        type="button"
+                        className="image-remove-btn"
+                        onClick={() => handleRemoveExistingImage(index)}
+                        aria-label={`Eliminar imagen ${index + 1}`}
+                      >
+                        <FiX />
+                      </button>
+                    </div>
+                    {primaryType === 'existing' && primaryImageIndex === index && (
+                      <div className="primary-label">Principal</div>
+                    )}
+                  </div>
+                ))}
+
+                {/* New image previews */}
+                {newImagePreviews.map((previewUrl, index) => (
+                  <div
+                    key={`new-${index}`}
+                    className={`image-preview-item ${primaryType === 'new' && primaryImageIndex === index ? 'primary' : ''}`}
+                  >
+                    <img src={previewUrl} alt={`Nueva imagen ${index + 1}`} />
+                    <div className="image-preview-overlay">
+                      <label className="image-primary-radio">
+                        <input
+                          type="radio"
+                          name="primary-image"
+                          checked={primaryType === 'new' && primaryImageIndex === index}
+                          onChange={() => handleSetPrimary('new', index)}
+                        />
+                        Principal
+                      </label>
+                      <button
+                        type="button"
+                        className="image-remove-btn"
+                        onClick={() => handleRemoveNewImage(index)}
+                        aria-label={`Eliminar nueva imagen ${index + 1}`}
+                      >
+                        <FiX />
+                      </button>
+                    </div>
+                    {primaryType === 'new' && primaryImageIndex === index && (
+                      <div className="primary-label">Principal</div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Error */}
+          {error && <div className="form-error" role="alert">{error}</div>}
+
+          {/* Submit */}
+          <div className="form-submit-section">
+            <button type="submit" className="submit-btn" disabled={submitting}>
+              {submitting ? (
+                uploadProgress
+                  ? `Subiendo imagen ${uploadProgress.current} de ${uploadProgress.total}...`
+                  : 'Guardando...'
+              ) : (
+                <>
+                  <FiSave />
+                  {isEditing ? 'Actualizar Vehículo' : 'Guardar Vehículo'}
+                </>
+              )}
+            </button>
+            <Link to="/admin" className="cancel-btn">
+              Cancelar
+            </Link>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }

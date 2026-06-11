@@ -1,52 +1,54 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
-import { FiCheck, FiMinus, FiArrowLeft } from 'react-icons/fi'
-import { supabase } from '../lib/supabase'
+import { useQuery } from '@tanstack/react-query'
+import { FiCheck, FiMinus, FiArrowLeft, FiX } from 'react-icons/fi'
+import { fetchVehiclesByIds } from '../lib/api'
+import { whatsappLink } from '../lib/siteConfig'
+import SEO from '../components/SEO'
+import DemoNotice from '../components/DemoNotice'
 import './ComparePage.css'
 
-const WHATSAPP_NUMBER = '18294470259'
+const MAX_COMPARE = 3
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+// Ids válidos: uuid de Supabase o slug del inventario demo
+const isValidId = (id) => UUID_RE.test(id) || id.startsWith('demo-')
+
+const seo = (
+  <SEO
+    title="Comparar vehículos"
+    description="Compara lado a lado precio, especificaciones y características de hasta tres vehículos del inventario de A2C International."
+    url="/comparar"
+    noIndex
+  />
+)
 
 const ComparePage = () => {
-  const [searchParams] = useSearchParams()
-  const [vehicles, setVehicles] = useState([])
-  const [exchangeRate, setExchangeRate] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const idsParam = searchParams.get('ids') || ''
 
-  const ids = searchParams.get('ids')
-  const vehicleIds = ids ? ids.split(',').filter(Boolean) : []
+  const { vehicleIds, hasInvalidIds } = useMemo(() => {
+    const raw = idsParam.split(',').map((s) => s.trim()).filter(Boolean)
+    const valid = [...new Set(raw)].filter(isValidId).slice(0, MAX_COMPARE)
+    return { vehicleIds: valid, hasInvalidIds: raw.length > 0 && valid.length === 0 }
+  }, [idsParam])
 
-  useEffect(() => {
-    if (vehicleIds.length > 0) {
-      fetchVehicles()
-    } else {
-      setLoading(false)
-    }
-  }, [ids])
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: ['compare', vehicleIds],
+    queryFn: () => fetchVehiclesByIds(vehicleIds),
+    enabled: vehicleIds.length > 0,
+  })
 
-  const fetchVehicles = async () => {
-    setLoading(true)
-    try {
-      const [vehiclesRes, rateRes] = await Promise.all([
-        supabase
-          .from('vehicles')
-          .select('*, vehicle_images(*)')
-          .in('id', vehicleIds),
-        supabase
-          .from('exchange_rates')
-          .select('usd_to_dop')
-          .order('updated_at', { ascending: false })
-          .limit(1)
-      ])
+  // Conserva el orden en que el usuario eligió los vehículos
+  const vehicles = useMemo(() => {
+    const byId = new Map((data?.vehicles || []).map((v) => [v.id, v]))
+    return vehicleIds.map((id) => byId.get(id)).filter(Boolean)
+  }, [data, vehicleIds])
 
-      if (vehiclesRes.data) setVehicles(vehiclesRes.data)
-      if (rateRes.data && rateRes.data.length > 0) {
-        setExchangeRate(rateRes.data[0].usd_to_dop)
-      }
-    } catch (err) {
-      console.error('Error fetching vehicles:', err)
-    } finally {
-      setLoading(false)
-    }
+  const exchangeRate = data?.exchangeRate ?? null
+
+  const removeVehicle = (id) => {
+    const remaining = vehicleIds.filter((vid) => vid !== id)
+    setSearchParams(remaining.length > 0 ? { ids: remaining.join(',') } : {})
   }
 
   // Build comparison rows
@@ -147,19 +149,34 @@ const ComparePage = () => {
     return primary || vehicle.vehicle_images?.[0] || null
   }
 
-  const getWhatsAppUrl = (v) => {
-    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-      `Hola, me interesa el ${v.brand} ${v.model} ${v.year} que vi en su página web. ¿Está disponible?`
-    )}`
-  }
+  const getWhatsAppUrl = (v) =>
+    whatsappLink(`Hola, me interesa el ${v.brand} ${v.model} ${v.year} que vi en su página web. ¿Está disponible?`)
 
-  if (loading) {
+  if (vehicleIds.length > 0 && isLoading) {
     return (
       <div className="compare-page">
+        {seo}
         <div className="container">
           <div className="compare-loading">
             <div className="spinner" />
-            <p>Cargando comparaci&oacute;n...</p>
+            <p>Cargando comparación…</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="compare-page">
+        {seo}
+        <div className="container">
+          <div className="compare-error">
+            <h2>No pudimos cargar la comparación</h2>
+            <p>Revisa tu conexión e inténtalo de nuevo.</p>
+            <button type="button" className="compare-error__retry" onClick={() => refetch()}>
+              Reintentar
+            </button>
           </div>
         </div>
       </div>
@@ -167,15 +184,21 @@ const ComparePage = () => {
   }
 
   if (vehicleIds.length === 0 || vehicles.length === 0) {
+    const linkBroken = hasInvalidIds || vehicleIds.length > 0
     return (
       <div className="compare-page">
+        {seo}
         <div className="container">
           <div className="compare-empty">
-            <h2>Comparar Veh&iacute;culos</h2>
-            <p>Selecciona veh&iacute;culos para comparar desde el inventario.</p>
+            <h2>Comparar vehículos</h2>
+            <p>
+              {linkBroken
+                ? 'Los vehículos de este enlace no existen o ya no están disponibles. Selecciona otros desde el inventario.'
+                : 'Selecciona vehículos para comparar desde el inventario.'}
+            </p>
             <Link to="/inventario" className="compare-empty__link">
-              <FiArrowLeft size={16} />
-              Ir al Inventario
+              <FiArrowLeft size={16} aria-hidden="true" />
+              Ir al inventario
             </Link>
           </div>
         </div>
@@ -185,14 +208,22 @@ const ComparePage = () => {
 
   return (
     <div className="compare-page">
+      {seo}
       <div className="container">
         <div className="compare-header">
           <Link to="/inventario" className="compare-back">
-            <FiArrowLeft size={16} />
-            Volver al Inventario
+            <FiArrowLeft size={16} aria-hidden="true" />
+            Volver al inventario
           </Link>
-          <h1 className="compare-title">Comparar Veh&iacute;culos</h1>
+          <h1 className="compare-title">Comparar vehículos</h1>
         </div>
+
+        {data?.demo && <DemoNotice />}
+        {vehicles.length < vehicleIds.length && (
+          <p className="compare-partial-note" role="note">
+            Algunos vehículos del enlace ya no están disponibles.
+          </p>
+        )}
 
         <div className="compare-table-wrapper">
           <table className="compare-table">
@@ -203,8 +234,16 @@ const ComparePage = () => {
                 {vehicles.map(v => {
                   const img = getPrimaryImage(v)
                   return (
-                    <th key={v.id} className="compare-table__vehicle-header">
+                    <th key={v.id} className="compare-table__vehicle-header" scope="col">
                       <div className="compare-vehicle-card">
+                        <button
+                          type="button"
+                          className="compare-vehicle-card__remove"
+                          onClick={() => removeVehicle(v.id)}
+                          aria-label={`Quitar ${v.brand} ${v.model} de la comparación`}
+                        >
+                          <FiX size={18} aria-hidden="true" />
+                        </button>
                         <div className="compare-vehicle-card__image">
                           {img ? (
                             <img src={img.image_url} alt={`${v.brand} ${v.model}`} />
@@ -244,7 +283,7 @@ const ComparePage = () => {
               {featureComparison.length > 0 && (
                 <>
                   <tr className="compare-table__section-header">
-                    <td colSpan={vehicles.length + 1}>Caracter&iacute;sticas</td>
+                    <td colSpan={vehicles.length + 1}>Características</td>
                   </tr>
                   {featureComparison.map(feat => (
                     <tr key={feat.name}>
@@ -252,9 +291,9 @@ const ComparePage = () => {
                       {feat.has.map((has, idx) => (
                         <td key={idx} className="compare-table__value compare-table__value--feature">
                           {has ? (
-                            <FiCheck size={18} className="compare-feature-check" />
+                            <FiCheck size={18} className="compare-feature-check" aria-label="Incluida" />
                           ) : (
-                            <FiMinus size={18} className="compare-feature-missing" />
+                            <FiMinus size={18} className="compare-feature-missing" aria-label="No incluida" />
                           )}
                         </td>
                       ))}
@@ -271,7 +310,7 @@ const ComparePage = () => {
                 {vehicles.map(v => (
                   <td key={v.id} className="compare-table__actions">
                     <Link to={`/vehiculo/${v.id}`} className="compare-action-btn compare-action-btn--detail">
-                      Ver Detalles
+                      Ver detalles
                     </Link>
                     <a
                       href={getWhatsAppUrl(v)}

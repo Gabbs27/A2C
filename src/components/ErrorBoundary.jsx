@@ -1,5 +1,4 @@
 import { Component } from 'react'
-import { Link } from 'react-router-dom'
 
 export default class ErrorBoundary extends Component {
   state = { hasError: false, error: null }
@@ -69,9 +68,10 @@ export default class ErrorBoundary extends Component {
             >
               Recargar
             </button>
-            <Link to="/" className="btn btn--ghost btn--md">
+            {/* <a> nativo: este boundary envuelve al Router, Link crashearía */}
+            <a href={import.meta.env.BASE_URL} className="btn btn--ghost btn--md">
               Ir al inicio
-            </Link>
+            </a>
           </div>
         </div>
       </div>

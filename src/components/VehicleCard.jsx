@@ -90,11 +90,15 @@ export default function VehicleCard({
           <Link to={detailHref}>{vehicle.model}</Link>
         </h3>
 
-        {priceUSD && (
+        {priceUSD ? (
           <p className="v-card__price tabular">
             <span aria-hidden="true">$</span>
             <span className="sr-only">USD </span>
             {priceUSD}
+          </p>
+        ) : (
+          <p className="v-card__price v-card__price--consult">
+            Consultar precio
           </p>
         )}
         {priceDOP && (

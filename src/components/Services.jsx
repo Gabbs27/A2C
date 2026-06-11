@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { FiArrowRight } from 'react-icons/fi'
+import { whatsappLink } from '../lib/siteConfig'
 import './Services.css'
 
 const SERVICES = [
@@ -13,19 +14,19 @@ const SERVICES = [
     body: 'Comparte los detalles de tu vehículo por WhatsApp, obtén una oferta justa y deja el papeleo en nuestras manos.',
     cta: {
       label: 'Escribir por WhatsApp',
-      href: 'https://wa.me/18294470259?text=Hola,%20me%20interesa%20vender%20mi%20veh%C3%ADculo',
+      href: whatsappLink('Hola, me interesa vender mi vehículo'),
       type: 'external',
     },
   },
   {
     title: 'Garantía y confianza',
     body: 'Cada vehículo viene con inspección completa, historial documentado y garantía. Financiamiento transparente para compras sin sorpresas.',
-    cta: { label: 'Conocer más', to: '/inventario', type: 'internal' },
+    cta: { label: 'Conocer más', href: '#financiamiento', type: 'anchor' },
   },
   {
     title: 'Entrega personalizada',
     body: 'Coordinamos entrega en toda República Dominicana con documentación al día y acompañamiento en cada paso.',
-    cta: { label: 'Contactar', href: '#contact', type: 'anchor' },
+    cta: { label: 'Contactar', href: '#contacto', type: 'anchor' },
   },
 ]
 
@@ -64,7 +65,7 @@ function CTALink({ cta }) {
 
 export default function Services() {
   return (
-    <section className="services" id="service" aria-labelledby="services-title">
+    <section className="services" id="servicios" aria-labelledby="services-title">
       <div className="container">
         <header className="services__header">
           <span className="services__number" aria-hidden="true">02</span>
