@@ -37,7 +37,7 @@ jobs:
       - name: Install
         run: npm ci
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium webkit
       # Sin secretos de Supabase la app sirve el inventario demo,
       # así que los e2e cubren el flujo completo igualmente.
       - name: Run E2E
