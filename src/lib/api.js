@@ -10,6 +10,16 @@ import {
   getDemoVehicleById,
 } from './demoData'
 
+// Un backend que acepta la conexión pero nunca responde (proyecto Supabase
+// saliendo de pausa, o saturado) no rechaza la promesa: sin corte, el catch
+// de cada función no llegaría a ejecutarse nunca y la página se quedaría en
+// skeletons indefinidamente. Con abortSignal el fetch se aborta, postgrest
+// lo devuelve como { error } y el fallback a demo sí se activa.
+const REQUEST_TIMEOUT_MS = 8000
+
+const withTimeout = (query) =>
+  query.abortSignal(AbortSignal.timeout(REQUEST_TIMEOUT_MS))
+
 const sortImages = (vehicle) => ({
   ...vehicle,
   vehicle_images: [...(vehicle.vehicle_images || [])].sort(
@@ -18,11 +28,17 @@ const sortImages = (vehicle) => ({
 })
 
 async function fetchRate() {
-  const { data } = await supabase
-    .from('exchange_rates')
-    .select('usd_to_dop')
-    .order('updated_at', { ascending: false })
-    .limit(1)
+  const { data, error } = await withTimeout(
+    supabase
+      .from('exchange_rates')
+      .select('usd_to_dop')
+      .order('updated_at', { ascending: false })
+      .limit(1)
+  )
+  // Si la consulta falla (timeout incluido) devolvemos null en vez de la tasa
+  // demo: la UI oculta el precio en DOP antes que convertirlo con una tasa
+  // inventada sobre vehículos reales. Tabla vacía sí usa la tasa por defecto.
+  if (error) return null
   return data?.[0]?.usd_to_dop || DEMO_EXCHANGE_RATE
 }
 
@@ -30,10 +46,12 @@ export async function fetchInventory() {
   if (isSupabaseConfigured) {
     try {
       const [vehiclesRes, rate] = await Promise.all([
-        supabase
-          .from('vehicles')
-          .select('*, vehicle_images(*)')
-          .order('created_at', { ascending: false }),
+        withTimeout(
+          supabase
+            .from('vehicles')
+            .select('*, vehicle_images(*)')
+            .order('created_at', { ascending: false })
+        ),
         fetchRate(),
       ])
       if (!vehiclesRes.error) {
@@ -58,12 +76,14 @@ export async function fetchFeatured(limit = 5) {
   if (isSupabaseConfigured) {
     try {
       const [vehiclesRes, rate] = await Promise.all([
-        supabase
-          .from('vehicles')
-          .select('*, vehicle_images(*)')
-          .eq('featured', true)
-          .order('created_at', { ascending: false })
-          .limit(limit),
+        withTimeout(
+          supabase
+            .from('vehicles')
+            .select('*, vehicle_images(*)')
+            .eq('featured', true)
+            .order('created_at', { ascending: false })
+            .limit(limit)
+        ),
         fetchRate(),
       ])
       if (!vehiclesRes.error) {
@@ -97,7 +117,9 @@ export async function fetchVehicleDetail(id) {
   }
   try {
     const [vehicleRes, rate] = await Promise.all([
-      supabase.from('vehicles').select('*, vehicle_images(*)').eq('id', id).single(),
+      withTimeout(
+        supabase.from('vehicles').select('*, vehicle_images(*)').eq('id', id).single()
+      ),
       fetchRate(),
     ])
     if (vehicleRes.error && vehicleRes.error.code !== 'PGRST116') {
@@ -135,13 +157,15 @@ export async function fetchRelated(vehicle, limit = 4) {
     // PostgREST: comillas dobles evitan que comas/parénts. en los valores
     // rompan la expresión .or()
     const quote = (v) => `"${String(v).replace(/"/g, '\\"')}"`
-    const { data, error } = await supabase
-      .from('vehicles')
-      .select('*, vehicle_images(*)')
-      .neq('id', vehicle.id)
-      .or(`brand.eq.${quote(vehicle.brand)},body_type.eq.${quote(vehicle.body_type)}`)
-      .eq('status', 'disponible')
-      .limit(limit)
+    const { data, error } = await withTimeout(
+      supabase
+        .from('vehicles')
+        .select('*, vehicle_images(*)')
+        .neq('id', vehicle.id)
+        .or(`brand.eq.${quote(vehicle.brand)},body_type.eq.${quote(vehicle.body_type)}`)
+        .eq('status', 'disponible')
+        .limit(limit)
+    )
     if (error) throw new Error(error.message)
     return { vehicles: (data || []).map(sortImages), demo: false }
   } catch {
@@ -163,7 +187,9 @@ export async function fetchVehiclesByIds(ids) {
   }
   try {
     const [vehiclesRes, rate] = await Promise.all([
-      supabase.from('vehicles').select('*, vehicle_images(*)').in('id', ids),
+      withTimeout(
+        supabase.from('vehicles').select('*, vehicle_images(*)').in('id', ids)
+      ),
       fetchRate(),
     ])
     if (vehiclesRes.error) throw new Error(vehiclesRes.error.message)
