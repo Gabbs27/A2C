@@ -1,0 +1,1 @@
+.demo-notice{font-family:var(--font-ui);font-size:var(--text-ui-xs);letter-spacing:var(--tracking-wide);color:var(--silver-500);border-left:2px solid var(--gold-600);padding:var(--space-2) var(--space-4);margin:var(--space-4) 0;background:color-mix(in srgb,var(--gold-600) 6%,transparent)}.demo-notice__sep{color:var(--gold-600);margin:0 var(--space-1)}
